@@ -1,0 +1,123 @@
+{
+    "@import": "./element.php",
+    "name": "before-after",
+    "title": "Avant/Après",
+    "group": "custom",
+    "icon": "${url:icon.svg}",
+    "iconSmall": "${url:icon.svg}",
+    "element": true,
+    "width": 500,
+    "defaults": {
+        "slider_position": 50,
+        "orientation": "horizontal",
+        "handle_style": "default"
+    },
+    "templates": {
+        "render": "./templates/template.php",
+        "content": "./templates/content.php"
+    },
+    "fields": {
+        "image_before": {
+            "label": "Image Avant",
+            "type": "image",
+            "description": "S\u00e9lectionnez l'image 'avant'"
+        },
+        "image_after": {
+            "label": "Image Apr\u00e8s",
+            "type": "image",
+            "description": "S\u00e9lectionnez l'image 'apr\u00e8s'"
+        },
+        "label_before": {
+            "label": "Label Avant",
+            "type": "text",
+            "description": "Texte affich\u00e9 sur l'image avant (optionnel)"
+        },
+        "label_after": {
+            "label": "Label Apr\u00e8s",
+            "type": "text",
+            "description": "Texte affich\u00e9 sur l'image apr\u00e8s (optionnel)"
+        },
+        "slider_position": {
+            "label": "Position initiale du slider",
+            "type": "range",
+            "attrs": {
+                "min": 0,
+                "max": 100,
+                "step": 1
+            },
+            "description": "Position de d\u00e9part du slider (0-100%)"
+        },
+        "orientation": {
+            "label": "Orientation",
+            "type": "select",
+            "options": {
+                "Horizontal": "horizontal",
+                "Vertical": "vertical"
+            },
+            "description": "Direction du slider"
+        },
+        "handle_style": {
+            "label": "Style du curseur",
+            "type": "select",
+            "options": {
+                "D\u00e9faut": "default",
+                "Cercle": "circle",
+                "Fl\u00e8ches": "arrows"
+            }
+        },
+        "image_width": {
+            "label": "Largeur",
+            "type": "select",
+            "options": {
+                "Auto": "",
+                "Petite": "small",
+                "Moyenne": "medium",
+                "Grande": "large",
+                "Pleine largeur": "full"
+            }
+        },
+        "image_height": {
+            "label": "Hauteur",
+            "type": "text",
+            "description": "Hauteur personnalis\u00e9e en pixels (ex: 400)"
+        },
+        "border_radius": {
+            "label": "Bordures arrondies",
+            "type": "select",
+            "options": {
+                "Aucune": "",
+                "Petite": "small",
+                "Moyenne": "medium",
+                "Grande": "large",
+                "Cercle": "circle"
+            }
+        }
+    },
+    "fieldset": {
+        "default": {
+            "type": "tabs",
+            "fields": [
+                {
+                    "title": "Contenu",
+                    "fields": [
+                        "image_before",
+                        "image_after",
+                        "label_before",
+                        "label_after"
+                    ]
+                },
+                {
+                    "title": "Param\u00e8tres",
+                    "fields": [
+                        "slider_position",
+                        "orientation",
+                        "handle_style",
+                        "image_width",
+                        "image_height",
+                        "border_radius"
+                    ]
+                }
+            ]
+        }
+    }
+}

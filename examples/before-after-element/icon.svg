@@ -1,0 +1,23 @@
+<svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+    <g fill="none" fill-rule="evenodd">
+        <!-- Image gauche -->
+        <rect x="1" y="3" width="8" height="14" rx="1" stroke="currentColor" stroke-width="1.5" fill="none"/>
+        <path d="M2 6 L8 6" stroke="currentColor" stroke-width="1"/>
+        <path d="M2 9 L7 9" stroke="currentColor" stroke-width="1"/>
+        <path d="M2 12 L8 12" stroke="currentColor" stroke-width="1"/>
+
+        <!-- Image droite -->
+        <rect x="11" y="3" width="8" height="14" rx="1" stroke="currentColor" stroke-width="1.5" fill="none"/>
+        <path d="M12 6 L18 6" stroke="currentColor" stroke-width="1"/>
+        <path d="M13 9 L18 9" stroke="currentColor" stroke-width="1"/>
+        <path d="M12 12 L18 12" stroke="currentColor" stroke-width="1"/>
+
+        <!-- Slider central -->
+        <line x1="10" y1="2" x2="10" y2="18" stroke="currentColor" stroke-width="2"/>
+        <circle cx="10" cy="10" r="2.5" fill="currentColor"/>
+
+        <!-- Flèches -->
+        <path d="M8 10 L9 10" stroke="white" stroke-width="0.5"/>
+        <path d="M11 10 L12 10" stroke="white" stroke-width="0.5"/>
+    </g>
+</svg>

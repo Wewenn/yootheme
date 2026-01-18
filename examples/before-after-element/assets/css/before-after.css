@@ -1,0 +1,252 @@
+/**
+ * Before/After Component Styles
+ * Composant de comparaison d'images pour YOOtheme
+ */
+
+/* Container principal */
+.ba-container {
+    position: relative;
+    overflow: hidden;
+    max-width: 100%;
+    margin: 0 auto;
+    user-select: none;
+    -webkit-user-select: none;
+    cursor: grab;
+}
+
+.ba-container:active {
+    cursor: grabbing;
+}
+
+/* Images */
+.ba-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+.ba-image img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    user-select: none;
+    pointer-events: none;
+}
+
+/* Image avant (fond) */
+.ba-before {
+    position: relative;
+}
+
+/* Image après (overlay) */
+.ba-after {
+    clip-path: polygon(0 0, 50% 0, 50% 100%, 0 100%);
+    transition: clip-path 0.1s ease;
+}
+
+/* Orientation verticale */
+.ba-orientation-vertical .ba-after {
+    clip-path: polygon(0 0, 100% 0, 100% 50%, 0 50%);
+}
+
+/* Labels */
+.ba-label {
+    position: absolute;
+    z-index: 10;
+    margin: 15px;
+}
+
+.ba-label-before {
+    top: 0;
+    left: 0;
+}
+
+.ba-label-after {
+    top: 0;
+    right: 0;
+}
+
+/* Slider */
+.ba-slider {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 4px;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.8);
+    transform: translateX(-50%);
+    z-index: 100;
+    transition: left 0.1s ease;
+}
+
+.ba-orientation-vertical .ba-slider {
+    top: 50%;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    transform: translateY(-50%);
+    transition: top 0.1s ease;
+}
+
+/* Handle (poignée) */
+.ba-handle {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: white;
+    border-radius: 50%;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    cursor: grab;
+    transition: all 0.2s ease;
+}
+
+.ba-container:active .ba-handle {
+    cursor: grabbing;
+}
+
+.ba-handle:hover {
+    transform: translate(-50%, -50%) scale(1.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* Style par défaut du handle */
+.ba-handle-default .ba-handle {
+    width: 60px;
+    height: 60px;
+}
+
+.ba-handle-default .ba-divider {
+    width: 2px;
+    height: 20px;
+    background: #666;
+    margin: 0 3px;
+}
+
+.ba-handle-default .ba-line-left,
+.ba-handle-default .ba-line-right {
+    color: #666;
+}
+
+/* Style cercle du handle */
+.ba-handle-circle .ba-handle {
+    width: 50px;
+    height: 50px;
+}
+
+.ba-handle-circle .ba-circle {
+    color: #666;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Style flèches du handle */
+.ba-handle-arrows .ba-handle {
+    width: 70px;
+    height: 70px;
+}
+
+.ba-handle-arrows .ba-arrow {
+    position: absolute;
+    color: #666;
+    font-size: 20px;
+}
+
+.ba-handle-arrows .ba-arrow-left {
+    left: 5px;
+}
+
+.ba-handle-arrows .ba-arrow-right {
+    right: 5px;
+}
+
+/* Handle en orientation verticale */
+.ba-orientation-vertical .ba-handle-arrows .ba-arrow-left {
+    left: 50%;
+    top: 5px;
+    transform: translateX(-50%) rotate(-90deg);
+}
+
+.ba-orientation-vertical .ba-handle-arrows .ba-arrow-right {
+    left: 50%;
+    bottom: 5px;
+    right: auto;
+    transform: translateX(-50%) rotate(-90deg);
+}
+
+/* Bordures personnalisées */
+.ba-border-radius-medium {
+    border-radius: 10px;
+}
+
+.ba-border-radius-large {
+    border-radius: 20px;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+    .ba-handle {
+        width: 50px !important;
+        height: 50px !important;
+    }
+
+    .ba-label {
+        margin: 10px;
+    }
+
+    .ba-label .uk-label {
+        font-size: 0.75rem;
+        padding: 2px 8px;
+    }
+}
+
+/* Animations */
+@keyframes ba-pulse {
+    0%, 100% {
+        transform: translate(-50%, -50%) scale(1);
+    }
+    50% {
+        transform: translate(-50%, -50%) scale(1.05);
+    }
+}
+
+.ba-handle.ba-pulse {
+    animation: ba-pulse 2s infinite;
+}
+
+/* Accessibilité */
+.ba-container:focus {
+    outline: 2px solid #1e87f0;
+    outline-offset: 2px;
+}
+
+/* États de chargement */
+.ba-image.ba-loading {
+    background: #f8f8f8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.ba-image.ba-loading::before {
+    content: '';
+    width: 40px;
+    height: 40px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #1e87f0;
+    border-radius: 50%;
+    animation: ba-spin 1s linear infinite;
+}
+
+@keyframes ba-spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
