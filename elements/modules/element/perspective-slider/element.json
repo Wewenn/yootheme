@@ -1,0 +1,455 @@
+{
+    "name": "wf_persp_slider",
+    "title": "Carrousel perspective infini",
+    "group": "WeFrame · Scroll & Images",
+    "icon": "${url:images/ic30.svg}",
+    "iconSmall": "${url:images/ic30.svg}",
+    "element": true,
+    "container": true,
+    "width": 560,
+    "defaults": {
+        "perspective": 1200,
+        "curve": "in",
+        "rotate": 42,
+        "depth": 260,
+        "arc": 0,
+        "fade": 0,
+        "card_w": 320,
+        "card_h": 200,
+        "gap": 32,
+        "radius": 8,
+        "shadow": true,
+        "grayscale": false,
+        "caption": "none",
+        "caption_color": "#ffffff",
+        "speed": 60,
+        "direction": "left",
+        "pause_hover": true,
+        "drag": true,
+        "bg": "",
+        "pad_y": 40,
+        "mask": false,
+        "card_w_tablet": 260,
+        "card_w_mobile": 200,
+        "card_h_mobile": 130,
+        "gap_mobile": 16,
+        "flat_mobile": false
+    },
+    "placeholder": {
+        "children": [
+            {
+                "type": "wf_persp_slider_item",
+                "props": {}
+            },
+            {
+                "type": "wf_persp_slider_item",
+                "props": {}
+            },
+            {
+                "type": "wf_persp_slider_item",
+                "props": {}
+            },
+            {
+                "type": "wf_persp_slider_item",
+                "props": {}
+            },
+            {
+                "type": "wf_persp_slider_item",
+                "props": {}
+            }
+        ]
+    },
+    "templates": {
+        "render": "./template.php"
+    },
+    "fields": {
+        "items": {
+            "label": "Images",
+            "type": "content-items",
+            "title": "title",
+            "item": "wf_persp_slider_item",
+            "media": [
+                {
+                    "type": "image",
+                    "item": {
+                        "title": "title",
+                        "image": "image"
+                    }
+                }
+            ]
+        },
+        "perspective": {
+            "label": "Profondeur du point de fuite (px)",
+            "type": "number",
+            "attrs": {
+                "min": 400,
+                "max": 4000,
+                "step": 50
+            },
+            "source": true,
+            "description": "Plus la valeur est basse, plus l'effet 3D est marqué."
+        },
+        "curve": {
+            "label": "Courbure",
+            "type": "select",
+            "options": {
+                "Cylindre — les bords se tournent vers vous": "in",
+                "Mur — les bords se tournent vers l'extérieur": "out",
+                "Plate — aucune rotation": "flat"
+            }
+        },
+        "rotate": {
+            "label": "Rotation aux bords (°)",
+            "type": "number",
+            "attrs": {
+                "min": 0,
+                "max": 80,
+                "step": 1
+            },
+            "source": true,
+            "enable": "curve !== 'flat'"
+        },
+        "depth": {
+            "label": "Recul aux bords (px)",
+            "type": "number",
+            "attrs": {
+                "min": 0,
+                "max": 800,
+                "step": 10
+            },
+            "source": true,
+            "description": "Les cartes des bords s'éloignent : elles rapetissent et se resserrent vers le centre. Au-delà de 350 px environ, elles finissent par se chevaucher — c'est voulu pour un effet de couloir, à baisser sinon."
+        },
+        "arc": {
+            "label": "Courbure verticale (px)",
+            "type": "number",
+            "attrs": {
+                "min": -200,
+                "max": 200,
+                "step": 5
+            },
+            "source": true,
+            "description": "Positif : les bords descendent. Négatif : les bords montent. 0 : rangée droite."
+        },
+        "fade": {
+            "label": "Fondu aux bords (%)",
+            "type": "number",
+            "attrs": {
+                "min": 0,
+                "max": 100,
+                "step": 5
+            },
+            "source": true,
+            "description": "Transparence gagnée par les cartes en s'éloignant du centre."
+        },
+        "card_w": {
+            "label": "Largeur d'une carte (px)",
+            "type": "number",
+            "attrs": {
+                "min": 80,
+                "max": 900,
+                "step": 10
+            },
+            "source": true
+        },
+        "card_h": {
+            "label": "Hauteur d'une carte (px)",
+            "type": "number",
+            "attrs": {
+                "min": 80,
+                "max": 900,
+                "step": 10
+            },
+            "source": true
+        },
+        "gap": {
+            "label": "Espacement entre les cartes (px)",
+            "type": "number",
+            "attrs": {
+                "min": 0,
+                "max": 200,
+                "step": 2
+            },
+            "source": true
+        },
+        "radius": {
+            "label": "Arrondi des cartes (px)",
+            "type": "number",
+            "attrs": {
+                "min": 0,
+                "max": 60,
+                "step": 1
+            },
+            "source": true
+        },
+        "shadow": {
+            "label": "Ombre",
+            "type": "checkbox",
+            "text": "Poser une ombre sous les cartes"
+        },
+        "grayscale": {
+            "label": "Noir et blanc",
+            "type": "checkbox",
+            "text": "Images en noir et blanc, couleur au survol"
+        },
+        "caption": {
+            "label": "Légende",
+            "type": "select",
+            "options": {
+                "Aucune": "none",
+                "Toujours visible": "always",
+                "Au survol": "hover"
+            },
+            "description": "Reprend le titre saisi sur chaque image."
+        },
+        "caption_color": {
+            "label": "Couleur de la légende",
+            "type": "color",
+            "enable": "caption !== 'none'"
+        },
+        "speed": {
+            "label": "Vitesse de défilement (px/s)",
+            "type": "number",
+            "attrs": {
+                "min": 0,
+                "max": 400,
+                "step": 5
+            },
+            "source": true,
+            "description": "0 = le carrousel ne défile pas tout seul. Le défilement s'arrête aussi si le visiteur a demandé moins d'animations."
+        },
+        "direction": {
+            "label": "Sens du défilement",
+            "type": "select",
+            "options": {
+                "Vers la gauche": "left",
+                "Vers la droite": "right"
+            }
+        },
+        "pause_hover": {
+            "label": "Survol",
+            "type": "checkbox",
+            "text": "Suspendre le défilement au survol"
+        },
+        "drag": {
+            "label": "Prise en main",
+            "type": "checkbox",
+            "text": "Faire défiler à la souris ou au doigt"
+        },
+        "bg": {
+            "label": "Fond",
+            "type": "color",
+            "description": "Vide = transparent."
+        },
+        "pad_y": {
+            "label": "Marge haut et bas (px)",
+            "type": "number",
+            "attrs": {
+                "min": 0,
+                "max": 200,
+                "step": 4
+            },
+            "source": true,
+            "description": "Laisse respirer les cartes qui s'inclinent."
+        },
+        "mask": {
+            "label": "Bords",
+            "type": "checkbox",
+            "text": "Estomper les bords gauche et droit"
+        },
+        "card_w_tablet": {
+            "label": "Largeur d'une carte sur tablette (px)",
+            "type": "number",
+            "attrs": {
+                "min": 80,
+                "max": 900,
+                "step": 10
+            },
+            "source": true
+        },
+        "card_w_mobile": {
+            "label": "Largeur d'une carte sur mobile (px)",
+            "type": "number",
+            "attrs": {
+                "min": 60,
+                "max": 700,
+                "step": 10
+            },
+            "source": true
+        },
+        "card_h_mobile": {
+            "label": "Hauteur d'une carte sur mobile (px)",
+            "type": "number",
+            "attrs": {
+                "min": 60,
+                "max": 700,
+                "step": 10
+            },
+            "source": true
+        },
+        "gap_mobile": {
+            "label": "Espacement sur mobile (px)",
+            "type": "number",
+            "attrs": {
+                "min": 0,
+                "max": 120,
+                "step": 2
+            },
+            "source": true
+        },
+        "flat_mobile": {
+            "label": "Perspective sur mobile",
+            "type": "checkbox",
+            "text": "Aplatir le carrousel sur mobile (≤ 639 px)",
+            "description": "Les cartes défilent alors sans rotation ni profondeur."
+        },
+        "animation": "${builder.animation}",
+        "visibility": "${builder.visibility}",
+        "name": "${builder.name}",
+        "status": "${builder.status}",
+        "source": "${builder.source}",
+        "id": "${builder.id}",
+        "transform": "${builder.transform}",
+        "position": "${builder.position}",
+        "blend": "${builder.blend}",
+        "class": {
+            "label": "Classes",
+            "type": "text",
+            "source": true,
+            "description": "Un ou plusieurs noms de classe pour l'element (separes par des espaces)."
+        },
+        "css": {
+            "label": "CSS",
+            "type": "editor",
+            "mode": "css",
+            "source": true,
+            "attrs": {
+                "debounce": 500
+            },
+            "description": "Styles CSS personnalises pour cet element."
+        },
+        "attributes": {
+            "label": "Attributs",
+            "type": "editor",
+            "source": true,
+            "attrs": {
+                "debounce": 500
+            },
+            "description": "Un attribut par ligne, au format nom=valeur."
+        },
+        "margin": "${builder.margin}",
+        "maxwidth": "${builder.maxwidth}"
+    },
+    "fieldset": {
+        "default": {
+            "type": "tabs",
+            "fields": [
+                {
+                    "title": "Contenu",
+                    "fields": [
+                        {
+                            "label": "Images",
+                            "type": "group",
+                            "divider": true,
+                            "fields": [
+                                "items"
+                            ]
+                        },
+                        {
+                            "label": "Perspective",
+                            "type": "group",
+                            "divider": true,
+                            "fields": [
+                                "perspective",
+                                "curve",
+                                "rotate",
+                                "depth",
+                                "arc",
+                                "fade"
+                            ]
+                        },
+                        {
+                            "label": "Cartes",
+                            "type": "group",
+                            "divider": true,
+                            "fields": [
+                                "card_w",
+                                "card_h",
+                                "gap",
+                                "radius",
+                                "shadow",
+                                "grayscale",
+                                "caption",
+                                "caption_color"
+                            ]
+                        },
+                        {
+                            "label": "Défilement",
+                            "type": "group",
+                            "divider": true,
+                            "fields": [
+                                "speed",
+                                "direction",
+                                "pause_hover",
+                                "drag"
+                            ]
+                        },
+                        {
+                            "label": "Habillage",
+                            "type": "group",
+                            "divider": true,
+                            "fields": [
+                                "bg",
+                                "pad_y",
+                                "mask"
+                            ]
+                        },
+                        {
+                            "label": "Responsive",
+                            "type": "group",
+                            "divider": true,
+                            "fields": [
+                                "card_w_tablet",
+                                "card_w_mobile",
+                                "card_h_mobile",
+                                "gap_mobile",
+                                "flat_mobile"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "title": "Paramètres",
+                    "fields": [
+                        {
+                            "label": "Général",
+                            "type": "group",
+                            "divider": true,
+                            "fields": [
+                                "position",
+                                "maxwidth",
+                                "margin",
+                                "blend",
+                                "animation",
+                                "visibility"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "title": "Avancé",
+                    "fields": [
+                        "name",
+                        "status",
+                        "source",
+                        "id",
+                        "class",
+                        "attributes",
+                        "css",
+                        "transform"
+                    ]
+                }
+            ]
+        }
+    }
+}

@@ -55,6 +55,13 @@ yootheme/
 │           └── js/
 │               └── before-after.js
 │
+├── elements/                       # Éléments prêts pour le plugin wf-yoo-elements
+│   ├── README.md                   # Installation + description des réglages
+│   └── modules/element/
+│       ├── panel-pp/               # Panneau ++ (fond image, sous-mise en page, responsive)
+│       ├── perspective-slider/     # Carrousel perspective infini
+│       └── perspective-slider-item/
+│
 └── README.md                       # Ce fichier
 ```
 
