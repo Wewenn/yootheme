@@ -1,0 +1,126 @@
+{
+    "name": "wf_restaurant_menu_item",
+    "title": "Plat",
+    "width": 500,
+    "placeholder": {
+        "props": {
+            "name": "Nom du plat",
+            "price": "0,00"
+        }
+    },
+    "templates": {
+        "render": "./template.php"
+    },
+    "defaults": {
+        "name": "Nom du plat",
+        "description": "",
+        "price": "",
+        "is_veg": false,
+        "is_vegan": false,
+        "is_spicy": false,
+        "is_gf": false,
+        "is_new": false,
+        "is_popular": false,
+        "custom_badge": "",
+        "image": "",
+        "image_alt": ""
+    },
+    "fields": {
+        "name": {
+            "label": "Nom",
+            "type": "text",
+            "source": true
+        },
+        "description": {
+            "label": "Description",
+            "type": "textarea",
+            "attrs": {
+                "rows": 2
+            },
+            "source": true
+        },
+        "price": {
+            "label": "Prix",
+            "description": "Ex. 12,90 (sans devise) ou « Prix du marché ».",
+            "type": "text",
+            "source": true
+        },
+        "is_veg": {
+            "label": "Végétarien",
+            "type": "checkbox",
+            "text": "V"
+        },
+        "is_vegan": {
+            "label": "Vegan",
+            "type": "checkbox",
+            "text": "VG"
+        },
+        "is_spicy": {
+            "label": "Épicé",
+            "type": "checkbox",
+            "text": "🌶"
+        },
+        "is_gf": {
+            "label": "Sans gluten",
+            "type": "checkbox",
+            "text": "GF"
+        },
+        "is_new": {
+            "label": "Nouveau",
+            "type": "checkbox",
+            "text": "Nouveau"
+        },
+        "is_popular": {
+            "label": "Populaire",
+            "type": "checkbox",
+            "text": "Populaire"
+        },
+        "custom_badge": {
+            "label": "Badge personnalisé",
+            "type": "text",
+            "source": true
+        },
+        "image": {
+            "label": "Photo",
+            "type": "image",
+            "source": true
+        },
+        "image_alt": {
+            "label": "Alt photo",
+            "type": "text",
+            "enable": "image",
+            "source": true
+        }
+    },
+    "fieldset": {
+        "default": {
+            "type": "tabs",
+            "fields": [
+                {
+                    "title": "Plat",
+                    "fields": [
+                        "name",
+                        "description",
+                        "price",
+                        "image",
+                        "image_alt"
+                    ]
+                },
+                {
+                    "title": "Badges",
+                    "fields": [
+                        "is_popular",
+                        "is_new",
+                        "is_veg",
+                        "is_vegan",
+                        "is_spicy",
+                        "is_gf",
+                        "custom_badge"
+                    ]
+                }
+            ]
+        }
+    },
+    "icon": "${url:images/ic30.svg}",
+    "iconSmall": "${url:images/ic30.svg}"
+}

@@ -1,0 +1,1066 @@
+{
+    "name": "wf_restaurant_hours",
+    "title": "Horaires Restaurant",
+    "group": "WeFrame · Restaurant",
+    "icon": "${url:images/ic30.svg}",
+    "element": true,
+    "width": 500,
+    "defaults": {
+        "data_source": "inline",
+        "timezone": "Europe/Paris",
+        "text_open": "Actuellement ouvert",
+        "text_closed": "Actuellement fermé",
+        "text_closes_at": "Ferme à",
+        "text_opens_at": "Ouvre à",
+        "text_tomorrow": "Ouvre demain à",
+        "show_next": true,
+        "alignment": "center",
+        "separator": "–",
+        "show_day": false,
+        "text_today": "Aujourd'hui",
+        "time_format": "24h",
+        "style": "pill",
+        "bg_open": "rgba(34,197,94,0.15)",
+        "bg_closed": "rgba(239,68,68,0.15)",
+        "text_color_open": "#16a34a",
+        "text_color_closed": "#dc2626",
+        "dot_color_open": "#22c55e",
+        "dot_color_closed": "#ef4444",
+        "dot_size": 10,
+        "font_size": 14,
+        "font_size_mobile": 12,
+        "font_weight": "600",
+        "radius": 100,
+        "padding_h": 20,
+        "padding_v": 10,
+        "max_width": 0,
+        "wrap_mobile": false,
+        "mobile_layout": "inline",
+        "hide_next_mobile": false,
+        "mobile_full_width": false,
+        "padding_h_mobile": 0,
+        "padding_v_mobile": 0,
+        "show_border": false,
+        "border_width": 1,
+        "border_open": "#22c55e",
+        "border_closed": "#ef4444",
+        "backdrop_blur": 0,
+        "bg_image": "",
+        "show_table": false,
+        "table_position": "below",
+        "table_font_size": 13,
+        "table_row_gap": 6,
+        "table_highlight_today": true,
+        "table_today_bg": "rgba(255,255,255,0.08)",
+        "table_today_color": "",
+        "table_today_weight": "700",
+        "table_closed_text": "Fermé",
+        "table_sep": "|",
+        "table_label_color": "",
+        "table_time_color": "",
+        "mon_enabled": true,
+        "mon_lunch_open": "12:00",
+        "mon_lunch_close": "14:30",
+        "mon_dinner_open": "19:00",
+        "mon_dinner_close": "22:30",
+        "tue_enabled": true,
+        "tue_lunch_open": "12:00",
+        "tue_lunch_close": "14:30",
+        "tue_dinner_open": "19:00",
+        "tue_dinner_close": "22:30",
+        "wed_enabled": true,
+        "wed_lunch_open": "12:00",
+        "wed_lunch_close": "14:30",
+        "wed_dinner_open": "19:00",
+        "wed_dinner_close": "22:30",
+        "thu_enabled": true,
+        "thu_lunch_open": "12:00",
+        "thu_lunch_close": "14:30",
+        "thu_dinner_open": "19:00",
+        "thu_dinner_close": "22:30",
+        "fri_enabled": true,
+        "fri_lunch_open": "12:00",
+        "fri_lunch_close": "14:30",
+        "fri_dinner_open": "19:00",
+        "fri_dinner_close": "23:00",
+        "sat_enabled": true,
+        "sat_lunch_open": "12:00",
+        "sat_lunch_close": "14:30",
+        "sat_dinner_open": "19:00",
+        "sat_dinner_close": "23:00",
+        "sun_enabled": false,
+        "sun_lunch_open": "",
+        "sun_lunch_close": "",
+        "sun_dinner_open": "",
+        "sun_dinner_close": ""
+    },
+    "templates": {
+        "render": "./template.php"
+    },
+    "fields": {
+        "data_source": {
+            "label": "Source des horaires",
+            "type": "select",
+            "options": {
+                "Cet élément (horaires fixes)": "inline",
+                "Réglages du restaurant (pilotable au téléphone)": "central"
+            },
+            "description": "« Réglages du restaurant » : horaires, état ouvert/fermé et fermetures exceptionnelles se pilotent depuis WeFrame → Mon restaurant, sans ouvrir le builder. Les horaires saisis ci-dessous sont alors ignorés."
+        },
+        "timezone": {
+            "label": "Fuseau horaire",
+            "type": "select",
+            "options": {
+                "Paris": "Europe/Paris",
+                "Londres": "Europe/London",
+                "Bruxelles": "Europe/Brussels",
+                "New York": "America/New_York",
+                "Montreal": "America/Montreal"
+            }
+        },
+        "time_format": {
+            "label": "Format heure",
+            "type": "select",
+            "options": {
+                "24h (12h30)": "24h",
+                "12h (12:30 PM)": "12h"
+            }
+        },
+        "text_open": {
+            "label": "Texte ouvert",
+            "type": "text",
+            "source": true
+        },
+        "text_closed": {
+            "label": "Texte fermé",
+            "type": "text",
+            "source": true
+        },
+        "text_closes_at": {
+            "label": "Texte 'Ferme à'",
+            "type": "text",
+            "source": true
+        },
+        "text_opens_at": {
+            "label": "Texte 'Ouvre à'",
+            "type": "text",
+            "source": true
+        },
+        "text_tomorrow": {
+            "label": "Texte 'Ouvre demain à'",
+            "type": "text",
+            "source": true
+        },
+        "show_next": {
+            "label": "Heure suivante",
+            "type": "checkbox",
+            "text": "Afficher la prochaine ouverture/fermeture"
+        },
+        "alignment": {
+            "label": "Alignement",
+            "type": "select",
+            "options": {
+                "Gauche": "left",
+                "Centre": "center",
+                "Droite": "right"
+            }
+        },
+        "separator": {
+            "label": "Séparateur status / heure",
+            "type": "text",
+            "attrs": {
+                "placeholder": "–"
+            },
+            "source": true
+        },
+        "show_day": {
+            "label": "Préfixe jour",
+            "type": "checkbox",
+            "text": "Afficher «Aujourd'hui :» avant le statut"
+        },
+        "text_today": {
+            "label": "Texte préfixe",
+            "type": "text",
+            "enable": "show_day",
+            "source": true
+        },
+        "style": {
+            "label": "Style badge",
+            "type": "select",
+            "options": {
+                "Pilule": "pill",
+                "Bandeau": "bar",
+                "Badge": "badge"
+            }
+        },
+        "bg_open": {
+            "label": "Fond ouvert",
+            "type": "text",
+            "attrs": {
+                "placeholder": "rgba(34,197,94,0.15)"
+            },
+            "source": true
+        },
+        "bg_closed": {
+            "label": "Fond fermé",
+            "type": "text",
+            "attrs": {
+                "placeholder": "rgba(239,68,68,0.15)"
+            },
+            "source": true
+        },
+        "text_color_open": {
+            "label": "Texte ouvert",
+            "type": "color"
+        },
+        "text_color_closed": {
+            "label": "Texte fermé",
+            "type": "color"
+        },
+        "dot_color_open": {
+            "label": "Pastille ouvert",
+            "type": "color"
+        },
+        "dot_color_closed": {
+            "label": "Pastille fermé",
+            "type": "color"
+        },
+        "dot_size": {
+            "label": "Taille pastille (px)",
+            "type": "number",
+            "attrs": {
+                "min": 4,
+                "max": 20
+            },
+            "source": true
+        },
+        "font_size": {
+            "label": "Taille texte desktop (px)",
+            "type": "number",
+            "attrs": {
+                "min": 10,
+                "max": 28
+            },
+            "source": true
+        },
+        "font_size_mobile": {
+            "label": "Taille texte mobile (px)",
+            "type": "number",
+            "attrs": {
+                "min": 10,
+                "max": 22
+            },
+            "source": true
+        },
+        "font_weight": {
+            "label": "Graisse texte",
+            "type": "select",
+            "options": {
+                "Normal (400)": "400",
+                "Medium (500)": "500",
+                "Semi-bold (600)": "600",
+                "Bold (700)": "700"
+            }
+        },
+        "radius": {
+            "label": "Coins (px)",
+            "type": "number",
+            "attrs": {
+                "min": 0,
+                "max": 100
+            },
+            "source": true
+        },
+        "padding_h": {
+            "label": "Padding horizontal (px)",
+            "type": "number",
+            "attrs": {
+                "min": 0,
+                "max": 60
+            },
+            "source": true
+        },
+        "padding_v": {
+            "label": "Padding vertical (px)",
+            "type": "number",
+            "attrs": {
+                "min": 0,
+                "max": 32
+            },
+            "source": true
+        },
+        "max_width": {
+            "label": "Largeur max (px, 0 = auto)",
+            "type": "number",
+            "attrs": {
+                "min": 0,
+                "max": 800
+            },
+            "source": true
+        },
+        "wrap_mobile": {
+            "label": "Mobile",
+            "type": "checkbox",
+            "text": "Wrap sur 2 lignes si texte trop long"
+        },
+        "mobile_layout": {
+            "label": "Disposition mobile",
+            "type": "select",
+            "options": {
+                "Une ligne": "inline",
+                "Deux lignes (statut / prochaine heure)": "stack"
+            }
+        },
+        "hide_next_mobile": {
+            "label": "Prochaine heure mobile",
+            "type": "checkbox",
+            "text": "Masquer « Ouvre demain… » sur mobile"
+        },
+        "mobile_full_width": {
+            "label": "Largeur mobile",
+            "type": "checkbox",
+            "text": "Badge pleine largeur sur mobile"
+        },
+        "padding_h_mobile": {
+            "label": "Padding H mobile (px)",
+            "description": "0 = même que desktop.",
+            "type": "number",
+            "attrs": {
+                "min": 0,
+                "max": 60
+            },
+            "source": true
+        },
+        "padding_v_mobile": {
+            "label": "Padding V mobile (px)",
+            "description": "0 = même que desktop.",
+            "type": "number",
+            "attrs": {
+                "min": 0,
+                "max": 32
+            },
+            "source": true
+        },
+        "show_border": {
+            "label": "Cadre",
+            "type": "checkbox",
+            "text": "Afficher le cadre (bordure)"
+        },
+        "border_width": {
+            "label": "Épaisseur bordure (px)",
+            "type": "number",
+            "attrs": {
+                "min": 0,
+                "max": 4
+            },
+            "enable": "show_border",
+            "source": true
+        },
+        "border_open": {
+            "label": "Couleur bordure ouvert",
+            "type": "color",
+            "enable": "show_border"
+        },
+        "border_closed": {
+            "label": "Couleur bordure fermé",
+            "type": "color",
+            "enable": "show_border"
+        },
+        "backdrop_blur": {
+            "label": "Flou fond (px)",
+            "type": "number",
+            "attrs": {
+                "min": 0,
+                "max": 24
+            },
+            "source": true
+        },
+        "bg_image": {
+            "label": "Image de fond",
+            "type": "image",
+            "source": true
+        },
+        "show_table": {
+            "label": "Tableau des horaires",
+            "type": "checkbox",
+            "text": "Afficher le tableau de la semaine"
+        },
+        "table_position": {
+            "label": "Position du tableau",
+            "type": "select",
+            "options": {
+                "Sous le badge": "below",
+                "Au-dessus du badge": "above",
+                "Tableau uniquement (sans badge)": "only"
+            },
+            "enable": "show_table"
+        },
+        "table_font_size": {
+            "label": "Taille texte tableau (px)",
+            "type": "number",
+            "attrs": {
+                "min": 10,
+                "max": 18
+            },
+            "enable": "show_table",
+            "source": true
+        },
+        "table_row_gap": {
+            "label": "Espace entre lignes (px)",
+            "type": "number",
+            "attrs": {
+                "min": 0,
+                "max": 20
+            },
+            "enable": "show_table",
+            "source": true
+        },
+        "table_closed_text": {
+            "label": "Texte jour fermé",
+            "type": "text",
+            "enable": "show_table",
+            "source": true
+        },
+        "table_sep": {
+            "label": "Séparateur midi/soir",
+            "type": "text",
+            "attrs": {
+                "placeholder": "|"
+            },
+            "enable": "show_table",
+            "source": true
+        },
+        "table_highlight_today": {
+            "label": "Jour actuel",
+            "type": "checkbox",
+            "text": "Mettre en évidence aujourd'hui",
+            "enable": "show_table"
+        },
+        "table_today_bg": {
+            "label": "Fond aujourd'hui",
+            "type": "text",
+            "attrs": {
+                "placeholder": "rgba(255,255,255,0.08)"
+            },
+            "enable": "show_table",
+            "source": true
+        },
+        "table_today_color": {
+            "label": "Couleur texte aujourd'hui",
+            "type": "text",
+            "attrs": {
+                "placeholder": "inherit"
+            },
+            "enable": "show_table",
+            "source": true
+        },
+        "table_today_weight": {
+            "label": "Graisse aujourd'hui",
+            "type": "select",
+            "options": {
+                "Semi-bold (600)": "600",
+                "Bold (700)": "700",
+                "Extra-bold (800)": "800"
+            },
+            "enable": "show_table"
+        },
+        "table_label_color": {
+            "label": "Couleur noms de jours",
+            "type": "text",
+            "attrs": {
+                "placeholder": "inherit"
+            },
+            "enable": "show_table",
+            "source": true
+        },
+        "table_time_color": {
+            "label": "Couleur heures",
+            "type": "text",
+            "attrs": {
+                "placeholder": "inherit"
+            },
+            "enable": "show_table",
+            "source": true
+        },
+        "mon_enabled": {
+            "label": "Lundi — ouvert",
+            "type": "checkbox",
+            "text": "Ouvert ce jour"
+        },
+        "mon_lunch_open": {
+            "label": "Lundi midi ouverture",
+            "type": "text",
+            "attrs": {
+                "placeholder": "12:00"
+            },
+            "source": true
+        },
+        "mon_lunch_close": {
+            "label": "Lundi midi fermeture",
+            "type": "text",
+            "attrs": {
+                "placeholder": "14:30"
+            },
+            "source": true
+        },
+        "mon_dinner_open": {
+            "label": "Lundi soir ouverture",
+            "type": "text",
+            "attrs": {
+                "placeholder": "19:00"
+            },
+            "source": true
+        },
+        "mon_dinner_close": {
+            "label": "Lundi soir fermeture",
+            "type": "text",
+            "attrs": {
+                "placeholder": "22:30"
+            },
+            "source": true
+        },
+        "tue_enabled": {
+            "label": "Mardi — ouvert",
+            "type": "checkbox",
+            "text": "Ouvert ce jour"
+        },
+        "tue_lunch_open": {
+            "label": "Mardi midi ouverture",
+            "type": "text",
+            "attrs": {
+                "placeholder": "12:00"
+            },
+            "source": true
+        },
+        "tue_lunch_close": {
+            "label": "Mardi midi fermeture",
+            "type": "text",
+            "attrs": {
+                "placeholder": "14:30"
+            },
+            "source": true
+        },
+        "tue_dinner_open": {
+            "label": "Mardi soir ouverture",
+            "type": "text",
+            "attrs": {
+                "placeholder": "19:00"
+            },
+            "source": true
+        },
+        "tue_dinner_close": {
+            "label": "Mardi soir fermeture",
+            "type": "text",
+            "attrs": {
+                "placeholder": "22:30"
+            },
+            "source": true
+        },
+        "wed_enabled": {
+            "label": "Mercredi — ouvert",
+            "type": "checkbox",
+            "text": "Ouvert ce jour"
+        },
+        "wed_lunch_open": {
+            "label": "Mercredi midi ouverture",
+            "type": "text",
+            "attrs": {
+                "placeholder": "12:00"
+            },
+            "source": true
+        },
+        "wed_lunch_close": {
+            "label": "Mercredi midi fermeture",
+            "type": "text",
+            "attrs": {
+                "placeholder": "14:30"
+            },
+            "source": true
+        },
+        "wed_dinner_open": {
+            "label": "Mercredi soir ouverture",
+            "type": "text",
+            "attrs": {
+                "placeholder": "19:00"
+            },
+            "source": true
+        },
+        "wed_dinner_close": {
+            "label": "Mercredi soir fermeture",
+            "type": "text",
+            "attrs": {
+                "placeholder": "22:30"
+            },
+            "source": true
+        },
+        "thu_enabled": {
+            "label": "Jeudi — ouvert",
+            "type": "checkbox",
+            "text": "Ouvert ce jour"
+        },
+        "thu_lunch_open": {
+            "label": "Jeudi midi ouverture",
+            "type": "text",
+            "attrs": {
+                "placeholder": "12:00"
+            },
+            "source": true
+        },
+        "thu_lunch_close": {
+            "label": "Jeudi midi fermeture",
+            "type": "text",
+            "attrs": {
+                "placeholder": "14:30"
+            },
+            "source": true
+        },
+        "thu_dinner_open": {
+            "label": "Jeudi soir ouverture",
+            "type": "text",
+            "attrs": {
+                "placeholder": "19:00"
+            },
+            "source": true
+        },
+        "thu_dinner_close": {
+            "label": "Jeudi soir fermeture",
+            "type": "text",
+            "attrs": {
+                "placeholder": "22:30"
+            },
+            "source": true
+        },
+        "fri_enabled": {
+            "label": "Vendredi — ouvert",
+            "type": "checkbox",
+            "text": "Ouvert ce jour"
+        },
+        "fri_lunch_open": {
+            "label": "Vendredi midi ouverture",
+            "type": "text",
+            "attrs": {
+                "placeholder": "12:00"
+            },
+            "source": true
+        },
+        "fri_lunch_close": {
+            "label": "Vendredi midi fermeture",
+            "type": "text",
+            "attrs": {
+                "placeholder": "14:30"
+            },
+            "source": true
+        },
+        "fri_dinner_open": {
+            "label": "Vendredi soir ouverture",
+            "type": "text",
+            "attrs": {
+                "placeholder": "19:00"
+            },
+            "source": true
+        },
+        "fri_dinner_close": {
+            "label": "Vendredi soir fermeture",
+            "type": "text",
+            "attrs": {
+                "placeholder": "23:00"
+            },
+            "source": true
+        },
+        "sat_enabled": {
+            "label": "Samedi — ouvert",
+            "type": "checkbox",
+            "text": "Ouvert ce jour"
+        },
+        "sat_lunch_open": {
+            "label": "Samedi midi ouverture",
+            "type": "text",
+            "attrs": {
+                "placeholder": "12:00"
+            },
+            "source": true
+        },
+        "sat_lunch_close": {
+            "label": "Samedi midi fermeture",
+            "type": "text",
+            "attrs": {
+                "placeholder": "14:30"
+            },
+            "source": true
+        },
+        "sat_dinner_open": {
+            "label": "Samedi soir ouverture",
+            "type": "text",
+            "attrs": {
+                "placeholder": "19:00"
+            },
+            "source": true
+        },
+        "sat_dinner_close": {
+            "label": "Samedi soir fermeture",
+            "type": "text",
+            "attrs": {
+                "placeholder": "23:00"
+            },
+            "source": true
+        },
+        "sun_enabled": {
+            "label": "Dimanche — ouvert",
+            "type": "checkbox",
+            "text": "Ouvert ce jour"
+        },
+        "sun_lunch_open": {
+            "label": "Dimanche midi ouverture",
+            "type": "text",
+            "attrs": {
+                "placeholder": "12:00"
+            },
+            "source": true
+        },
+        "sun_lunch_close": {
+            "label": "Dimanche midi fermeture",
+            "type": "text",
+            "attrs": {
+                "placeholder": "14:30"
+            },
+            "source": true
+        },
+        "sun_dinner_open": {
+            "label": "Dimanche soir ouverture",
+            "type": "text",
+            "attrs": {
+                "placeholder": "19:00"
+            },
+            "source": true
+        },
+        "sun_dinner_close": {
+            "label": "Dimanche soir fermeture",
+            "type": "text",
+            "attrs": {
+                "placeholder": "22:30"
+            },
+            "source": true
+        },
+        "position": "${builder.position}",
+        "blend": "${builder.blend}",
+        "animation": "${builder.animation}",
+        "visibility": "${builder.visibility}",
+        "name": "${builder.name}",
+        "status": "${builder.status}",
+        "source": "${builder.source}",
+        "id": "${builder.id}",
+        "transform": "${builder.transform}",
+        "class": {
+            "label": "Classes",
+            "type": "text",
+            "source": true,
+            "description": "Un ou plusieurs noms de classe pour l'element (separes par des espaces)."
+        },
+        "css": {
+            "label": "CSS",
+            "type": "editor",
+            "mode": "css",
+            "source": true,
+            "attrs": {
+                "debounce": 500
+            },
+            "description": "Styles CSS personnalises pour cet element."
+        },
+        "attributes": {
+            "label": "Attributs",
+            "type": "editor",
+            "source": true,
+            "attrs": {
+                "debounce": 500
+            },
+            "description": "Un attribut par ligne, au format nom=valeur."
+        },
+        "margin": "${builder.margin}",
+        "maxwidth": "${builder.maxwidth}"
+    },
+    "fieldset": {
+        "default": {
+            "type": "tabs",
+            "fields": [
+                {
+                    "title": "Horaires",
+                    "fields": [
+                        {
+                            "label": "Source des données",
+                            "type": "group",
+                            "divider": true,
+                            "fields": [
+                                "data_source"
+                            ]
+                        },
+                        {
+                            "label": "Lundi",
+                            "type": "group",
+                            "divider": true,
+                            "fields": [
+                                "mon_enabled",
+                                "mon_lunch_open",
+                                "mon_lunch_close",
+                                "mon_dinner_open",
+                                "mon_dinner_close"
+                            ]
+                        },
+                        {
+                            "label": "Mardi",
+                            "type": "group",
+                            "divider": true,
+                            "fields": [
+                                "tue_enabled",
+                                "tue_lunch_open",
+                                "tue_lunch_close",
+                                "tue_dinner_open",
+                                "tue_dinner_close"
+                            ]
+                        },
+                        {
+                            "label": "Mercredi",
+                            "type": "group",
+                            "divider": true,
+                            "fields": [
+                                "wed_enabled",
+                                "wed_lunch_open",
+                                "wed_lunch_close",
+                                "wed_dinner_open",
+                                "wed_dinner_close"
+                            ]
+                        },
+                        {
+                            "label": "Jeudi",
+                            "type": "group",
+                            "divider": true,
+                            "fields": [
+                                "thu_enabled",
+                                "thu_lunch_open",
+                                "thu_lunch_close",
+                                "thu_dinner_open",
+                                "thu_dinner_close"
+                            ]
+                        },
+                        {
+                            "label": "Vendredi",
+                            "type": "group",
+                            "divider": true,
+                            "fields": [
+                                "fri_enabled",
+                                "fri_lunch_open",
+                                "fri_lunch_close",
+                                "fri_dinner_open",
+                                "fri_dinner_close"
+                            ]
+                        },
+                        {
+                            "label": "Samedi",
+                            "type": "group",
+                            "divider": true,
+                            "fields": [
+                                "sat_enabled",
+                                "sat_lunch_open",
+                                "sat_lunch_close",
+                                "sat_dinner_open",
+                                "sat_dinner_close"
+                            ]
+                        },
+                        {
+                            "label": "Dimanche",
+                            "type": "group",
+                            "divider": true,
+                            "fields": [
+                                "sun_enabled",
+                                "sun_lunch_open",
+                                "sun_lunch_close",
+                                "sun_dinner_open",
+                                "sun_dinner_close"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "title": "Textes",
+                    "fields": [
+                        {
+                            "label": "Statut",
+                            "type": "group",
+                            "divider": true,
+                            "fields": [
+                                "text_open",
+                                "text_closed",
+                                "show_next",
+                                "text_closes_at",
+                                "text_opens_at",
+                                "text_tomorrow"
+                            ]
+                        },
+                        {
+                            "label": "Options",
+                            "type": "group",
+                            "divider": true,
+                            "fields": [
+                                "show_day",
+                                "text_today",
+                                "separator",
+                                "time_format"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "title": "Badge",
+                    "fields": [
+                        {
+                            "label": "Apparence",
+                            "type": "group",
+                            "divider": true,
+                            "fields": [
+                                "style",
+                                "alignment",
+                                "font_size",
+                                "font_size_mobile",
+                                "font_weight",
+                                "radius",
+                                "padding_h",
+                                "padding_v",
+                                "max_width"
+                            ]
+                        },
+                        {
+                            "label": "Responsive mobile",
+                            "type": "group",
+                            "divider": true,
+                            "fields": [
+                                "mobile_layout",
+                                "hide_next_mobile",
+                                "mobile_full_width",
+                                "padding_h_mobile",
+                                "padding_v_mobile",
+                                "wrap_mobile"
+                            ]
+                        },
+                        {
+                            "label": "Pastille",
+                            "type": "group",
+                            "divider": true,
+                            "fields": [
+                                "dot_size",
+                                "dot_color_open",
+                                "dot_color_closed"
+                            ]
+                        },
+                        {
+                            "label": "Couleurs ouvert",
+                            "type": "group",
+                            "divider": true,
+                            "fields": [
+                                "bg_open",
+                                "text_color_open"
+                            ]
+                        },
+                        {
+                            "label": "Couleurs fermé",
+                            "type": "group",
+                            "divider": true,
+                            "fields": [
+                                "bg_closed",
+                                "text_color_closed"
+                            ]
+                        },
+                        {
+                            "label": "Bordure",
+                            "type": "group",
+                            "divider": true,
+                            "fields": [
+                                "show_border",
+                                "border_width",
+                                "border_open",
+                                "border_closed"
+                            ]
+                        },
+                        {
+                            "label": "Fond",
+                            "type": "group",
+                            "divider": true,
+                            "fields": [
+                                "backdrop_blur",
+                                "bg_image"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "title": "Tableau",
+                    "fields": [
+                        {
+                            "label": "Affichage",
+                            "type": "group",
+                            "divider": true,
+                            "fields": [
+                                "show_table",
+                                "table_position",
+                                "table_font_size",
+                                "table_row_gap",
+                                "table_closed_text",
+                                "table_sep"
+                            ]
+                        },
+                        {
+                            "label": "Aujourd'hui",
+                            "type": "group",
+                            "divider": true,
+                            "fields": [
+                                "table_highlight_today",
+                                "table_today_bg",
+                                "table_today_color",
+                                "table_today_weight"
+                            ]
+                        },
+                        {
+                            "label": "Couleurs",
+                            "type": "group",
+                            "divider": true,
+                            "fields": [
+                                "table_label_color",
+                                "table_time_color"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "title": "Paramètres",
+                    "fields": [
+                        {
+                            "label": "Général",
+                            "type": "group",
+                            "divider": true,
+                            "fields": [
+                                "position",
+                                "maxwidth",
+                                "margin",
+                                "blend",
+                                "animation",
+                                "visibility"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "title": "Avancé",
+                    "fields": [
+                        "name",
+                        "status",
+                        "source",
+                        "id",
+                        "class",
+                        "attributes",
+                        "css",
+                        "transform"
+                    ]
+                }
+            ]
+        }
+    },
+    "iconSmall": "${url:images/ic30.svg}"
+}

@@ -55,8 +55,13 @@ yootheme/
 │           └── js/
 │               └── before-after.js
 │
-├── dist/                           # ZIP installable
-│   └── wf-yoo-elements-sans-wc-6.29.0.zip
+├── dist/                           # ZIP installables
+│   ├── wf-yoo-elements-sans-wc-6.29.0.zip
+│   └── wf-restaurant-1.16.0.zip
+│
+├── plugins/                        # Sources de plugins corrigées
+│   ├── REVUE-wf-restaurant.md      # Revue complète + idées
+│   └── wf-restaurant/              # WF Restaurant v1.16.0 (patché)
 │
 ├── elements/                       # Éléments prêts pour le plugin wf-yoo-elements
 │   ├── README.md                   # Installation + description des réglages
