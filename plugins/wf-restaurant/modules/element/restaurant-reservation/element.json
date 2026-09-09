@@ -11,6 +11,7 @@
         "intro": "Laissez-nous vos coordonnées, nous vous recontactons pour confirmer.",
         "button_label": "Envoyer la demande",
         "date_mode": "strip",
+        "layout": "compact",
         "accent": "#c0272d",
         "field_bg": "#ffffff",
         "field_border": "#d5d5d5",
@@ -55,6 +56,16 @@
                 "Ruban de jours": "strip",
                 "Calendrier": "calendar"
             }
+        },
+        "layout": {
+            "label": "Disposition",
+            "type": "select",
+            "options": {
+                "Formulaire compact (une colonne)": "compact",
+                "Deux colonnes : calendrier | cr\u00e9neaux": "split"
+            },
+            "description": "\u00ab Deux colonnes \u00bb \u00e9largit l'\u00e9l\u00e9ment \u00e0 880 px et pose le calendrier face aux cr\u00e9neaux, comme un \u00e9cran de prise de rendez-vous. Demande le mode Calendrier ci-dessus.",
+            "enable": "date_mode === 'calendar'"
         },
         "show_email": {
             "label": "Champ e-mail",
@@ -209,6 +220,7 @@
                             "divider": true,
                             "fields": [
                                 "date_mode",
+                                "layout",
                                 "show_email",
                                 "show_note",
                                 "max_party"

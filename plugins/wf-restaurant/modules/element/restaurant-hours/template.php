@@ -16,7 +16,8 @@ if ( ! function_exists( 'wf_rh_hm' ) ) {
 
 if ( ! function_exists( 'wf_rh_fmt' ) ) {
     function wf_rh_fmt( int $minutes, string $fmt = '24h' ): string {
-        $h = intdiv( $minutes, 60 );
+        // Une fermeture après minuit vaut plus de 1440 : 01:00 est stocké 1500.
+        $h = intdiv( $minutes, 60 ) % 24;
         $m = $minutes % 60;
         if ( $fmt === '12h' ) {
             $period = $h >= 12 ? 'PM' : 'AM';
@@ -27,33 +28,46 @@ if ( ! function_exists( 'wf_rh_fmt' ) ) {
     }
 }
 
+/**
+ * Plages d'une journée, en minutes depuis minuit, fin repoussée au lendemain
+ * quand le service déborde (19:00 → 01:00 devient [1140, 1500]).
+ */
+if ( ! function_exists( 'wf_rh_windows' ) ) {
+    function wf_rh_windows( array $slots ): array {
+        $out = [];
+        foreach ( $slots as $slot ) {
+            $o = wf_rh_hm( (string) ( $slot[0] ?? '' ) );
+            $c = wf_rh_hm( (string) ( $slot[1] ?? '' ) );
+            if ( $o === null || $c === null || $c === $o ) { continue; }
+            if ( $c < $o ) { $c += 1440; }
+            $out[] = [ $o, $c ];
+        }
+        return $out;
+    }
+}
+
 if ( ! function_exists( 'wf_rh_table_html' ) ) {
-    function wf_rh_table_html( string $uid, array $schedule, int $day_idx, int $tbl_fs, int $tbl_gap, string $tbl_closed, string $tbl_sep, bool $tbl_hl, string $tbl_tbg, string $tbl_tc, string $tbl_tw, string $tbl_lc, string $tbl_tic, string $time_fmt ): string {
+    function wf_rh_table_html( string $uid, array $schedule, int $day_idx, int $tbl_fs, int $tbl_gap, string $tbl_closed, string $tbl_sep, string $tbl_lc, string $tbl_tic, string $time_fmt ): string {
         $day_order  = [ 1, 2, 3, 4, 5, 6, 0 ]; // Mon → Sun
         $day_labels = [ 'Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi' ];
 
         $out = '<div id="' . esc_attr( $uid ) . '_t" class="wf-rh-table" style="display:flex;flex-direction:column;gap:' . $tbl_gap . 'px;font-size:' . $tbl_fs . 'px;width:100%;">';
 
+        // Le surlignage du jour passe par la classe .wf-rh-today, jamais par du
+        // style en ligne : c'est ce qui permet au script de le déplacer quand la
+        // page a été servie depuis un cache figé sur un autre jour.
         foreach ( $day_order as $di ) {
             $is_today = ( $di === $day_idx );
-            $row_bg   = ( $is_today && $tbl_hl && $tbl_tbg ) ? 'background:' . esc_attr( $tbl_tbg ) . ';' : '';
-            $row_tc   = ( $is_today && $tbl_hl && $tbl_tc  ) ? 'color:' . esc_attr( $tbl_tc )  . ';' : '';
-            $lbl_w    = ( $is_today && $tbl_hl ) ? $tbl_tw : '400';
             $lbl_c    = $tbl_lc  ? 'color:' . esc_attr( $tbl_lc )  . ';' : '';
             $tic_css  = $tbl_tic ? 'color:' . esc_attr( $tbl_tic ) . ';' : '';
 
-            $slots = $schedule[ $di ] ?? [];
             $times = [];
-            foreach ( $slots as $slot ) {
-                $o = wf_rh_hm( $slot[0] ?? '' );
-                $c = wf_rh_hm( $slot[1] ?? '' );
-                if ( $o !== null && $c !== null ) {
-                    $times[] = wf_rh_fmt( $o, $time_fmt ) . ' – ' . wf_rh_fmt( $c, $time_fmt );
-                }
+            foreach ( wf_rh_windows( $schedule[ $di ] ?? [] ) as $w ) {
+                $times[] = wf_rh_fmt( $w[0], $time_fmt ) . ' – ' . wf_rh_fmt( $w[1], $time_fmt );
             }
 
-            $out .= '<div class="wf-rh-row' . ( $is_today ? ' wf-rh-today' : '' ) . '" style="display:grid;grid-template-columns:110px 1fr;align-items:center;gap:8px;padding:3px 8px;border-radius:4px;' . $row_bg . $row_tc . '">';
-            $out .= '<span class="wf-rh-day-label" style="font-weight:' . esc_attr( $lbl_w ) . ';' . $lbl_c . '">' . esc_html( $day_labels[ $di ] ) . '</span>';
+            $out .= '<div class="wf-rh-row' . ( $is_today ? ' wf-rh-today' : '' ) . '" data-d="' . $di . '" style="display:grid;grid-template-columns:110px 1fr;align-items:center;gap:8px;padding:3px 8px;border-radius:4px;">';
+            $out .= '<span class="wf-rh-day-label" style="' . $lbl_c . '">' . esc_html( $day_labels[ $di ] ) . '</span>';
 
             if ( empty( $times ) ) {
                 $out .= '<span class="wf-rh-closed-text" style="opacity:.4;' . $tic_css . '">' . esc_html( $tbl_closed ) . '</span>';
@@ -122,7 +136,7 @@ $tbl_gap     = max( 0,  (int)( $props['table_row_gap']       ?? 6 ) );
 $tbl_closed  = $props['table_closed_text'] ?? 'Fermé';
 $tbl_sep     = $props['table_sep']         ?? '|';
 $tbl_hl      = ! empty( $props['table_highlight_today'] );
-$tbl_tbg     = trim( $props['table_today_bg']    ?? 'rgba(255,255,255,0.08)' );
+$tbl_tbg     = trim( $props['table_today_bg']    ?? 'rgba(127,127,127,0.16)' );
 $tbl_tc      = trim( $props['table_today_color'] ?? '' );
 $tbl_tw      = $props['table_today_weight'] ?? '700';
 $tbl_lc      = trim( $props['table_label_color'] ?? '' );
@@ -186,11 +200,17 @@ $now_min = (int) $now_dt->format( 'G' ) * 60 + (int) $now_dt->format( 'i' );
 
 $is_open   = false;
 $closes_at = null;
-foreach ( $schedule[ $day_idx ] ?? [] as $slot ) {
-    $o = wf_rh_hm( $slot[0] ?? '' );
-    $c = wf_rh_hm( $slot[1] ?? '' );
-    if ( $o !== null && $c !== null && $now_min >= $o && $now_min < $c ) {
-        $is_open = true; $closes_at = $c; break;
+foreach ( wf_rh_windows( $schedule[ $day_idx ] ?? [] ) as $w ) {
+    if ( $now_min >= $w[0] && $now_min < $w[1] ) {
+        $is_open = true; $closes_at = $w[1]; break;
+    }
+}
+// À 00h30 on est encore dans le service de la veille s'il va jusqu'à 01h00.
+if ( ! $is_open ) {
+    foreach ( wf_rh_windows( $schedule[ ( $day_idx + 6 ) % 7 ] ?? [] ) as $w ) {
+        if ( $w[1] > 1440 && $now_min < $w[1] - 1440 ) {
+            $is_open = true; $closes_at = $w[1] - 1440; break;
+        }
     }
 }
 
@@ -295,7 +315,7 @@ $cfg = json_encode( [
 <?php $wfEl = ( isset( $this ) && is_object( $this ) && method_exists( $this, 'el' ) ) ? $this->el( 'div' ) : null; if ( $wfEl ) { echo $wfEl( $props, isset( $attrs ) ? $attrs : array() ); } ?>
 
 <?php if ( $show_table && $table_pos === 'above' ) : ?>
-<?= wf_rh_table_html( $uid, $schedule, $day_idx, $tbl_fs, $tbl_gap, $tbl_closed, $tbl_sep, $tbl_hl, $tbl_tbg, $tbl_tc, $tbl_tw, $tbl_lc, $tbl_tic, $time_fmt ) ?>
+<?= wf_rh_table_html( $uid, $schedule, $day_idx, $tbl_fs, $tbl_gap, $tbl_closed, $tbl_sep, $tbl_lc, $tbl_tic, $time_fmt ) ?>
 <?php endif; ?>
 
 <?php if ( $show_badge ) : ?>
@@ -317,12 +337,19 @@ $cfg = json_encode( [
 <?php endif; ?>
 
 <?php if ( $show_table && in_array( $table_pos, [ 'below', 'only' ], true ) ) : ?>
-<?= wf_rh_table_html( $uid, $schedule, $day_idx, $tbl_fs, $tbl_gap, $tbl_closed, $tbl_sep, $tbl_hl, $tbl_tbg, $tbl_tc, $tbl_tw, $tbl_lc, $tbl_tic, $time_fmt ) ?>
+<?= wf_rh_table_html( $uid, $schedule, $day_idx, $tbl_fs, $tbl_gap, $tbl_closed, $tbl_sep, $tbl_lc, $tbl_tic, $time_fmt ) ?>
 <?php endif; ?>
 <?php if ( ! empty( $wfEl ) ) { echo $wfEl->end(); } ?>
 
 <style>
 @keyframes wf-rh-pulse{0%,100%{opacity:1}50%{opacity:.45}}
+<?php if ( $show_table ) : ?>
+#<?= esc_attr( $uid ) ?>_t .wf-rh-day-label{font-weight:400;}
+<?php if ( $tbl_hl ) : ?>
+#<?= esc_attr( $uid ) ?>_t .wf-rh-today{<?= '' !== $tbl_tbg ? 'background:' . esc_attr( $tbl_tbg ) . ';' : '' ?><?= '' !== $tbl_tc ? 'color:' . esc_attr( $tbl_tc ) . ';' : '' ?>}
+#<?= esc_attr( $uid ) ?>_t .wf-rh-today .wf-rh-day-label{font-weight:<?= esc_attr( $tbl_tw ) ?>;}
+<?php endif; ?>
+<?php endif; ?>
 <?php if ( $fs_mob !== $fs ) : ?>
 @media(max-width:767px){
     #<?= esc_attr( $uid ) ?> { font-size: <?= $fs_mob ?>px !important; }
@@ -362,15 +389,17 @@ $cfg = json_encode( [
 <?php endif; ?>
 </style>
 
-<?php if ( $show_badge ) : ?>
+<?php if ( $show_badge || $show_table ) : ?>
 <script>
 (function(){
     var c = <?= $cfg ?>;
-    var el     = document.getElementById(c.uid); if (!el) return;
-    var dot    = el.querySelector('.wf-rh-dot');
-    var status = el.querySelector('.wf-rh-status');
-    var next   = el.querySelector('.wf-rh-next');
-    var sep    = el.querySelector('.wf-rh-sep');
+    // Le badge peut être absent (mode « tableau seul ») : le script sert
+    // alors uniquement à replacer la ligne du jour.
+    var el     = document.getElementById(c.uid);
+    var dot    = el ? el.querySelector('.wf-rh-dot')    : null;
+    var status = el ? el.querySelector('.wf-rh-status') : null;
+    var next   = el ? el.querySelector('.wf-rh-next')   : null;
+    var sep    = el ? el.querySelector('.wf-rh-sep')    : null;
 
     function pad(n) { return n < 10 ? '0' + n : '' + n; }
 
@@ -380,8 +409,22 @@ $cfg = json_encode( [
         return p.length < 2 ? null : parseInt(p[0], 10) * 60 + parseInt(p[1], 10);
     }
 
+    // Plages d'une journée, fin repoussée au lendemain si le service déborde.
+    function wins(slots) {
+        var out = [];
+        for (var i = 0; i < (slots || []).length; i++) {
+            var o = hm(slots[i][0]), cl = hm(slots[i][1]);
+            if (o === null) continue;
+            if (cl === null) continue;
+            if (cl === o) continue;
+            if (cl < o) cl += 1440;
+            out.push([o, cl]);
+        }
+        return out;
+    }
+
     function fmtH(m) {
-        var h = Math.floor(m / 60), mn = m % 60;
+        var h = Math.floor(m / 60) % 24, mn = m % 60;
         if (c.timeFormat === '12h') {
             var period = h >= 12 ? 'PM' : 'AM';
             var h12    = h > 12 ? h - 12 : (h === 0 ? 12 : h);
@@ -402,10 +445,30 @@ $cfg = json_encode( [
         var slots  = c.schedule[dayIdx] || [];
         var isOpen = false, closesAt = null;
 
-        for (var i = 0; i < slots.length; i++) {
-            var o = hm(slots[i][0]), cl = hm(slots[i][1]);
-            if (o !== null) if (cl !== null) if (nowMin >= o) if (nowMin < cl) {
-                isOpen = true; closesAt = cl; break;
+        var todayWins = wins(slots);
+        for (var i = 0; i < todayWins.length; i++) {
+            if (nowMin >= todayWins[i][0]) if (nowMin < todayWins[i][1]) {
+                isOpen = true; closesAt = todayWins[i][1]; break;
+            }
+        }
+        // À 00h30 on est encore dans le service de la veille s'il finit à 01h00.
+        if (!isOpen) {
+            var yWins = wins(c.schedule[(dayIdx + 6) % 7]);
+            for (var yi = 0; yi < yWins.length; yi++) {
+                if (yWins[yi][1] > 1440) if (nowMin < yWins[yi][1] - 1440) {
+                    isOpen = true; closesAt = yWins[yi][1] - 1440; break;
+                }
+            }
+        }
+
+        // Le tableau était rendu en PHP et jamais retouché : derrière un cache
+        // de page, la ligne surlignée restait celle du jour de la mise en cache.
+        var table = document.getElementById(c.uid + '_t');
+        if (table) {
+            var rows = table.querySelectorAll('.wf-rh-row');
+            for (var r = 0; r < rows.length; r++) {
+                var isT = parseInt(rows[r].getAttribute('data-d'), 10) === dayIdx;
+                rows[r].classList.toggle('wf-rh-today', isT);
             }
         }
 
@@ -423,13 +486,14 @@ $cfg = json_encode( [
         if (forced === 'open')   { isOpen = true;  closesAt = null; }
         if (forced === 'closed') { isOpen = false; closesAt = null; }
 
+        if (!el) return;
         el.style.background  = isOpen ? c.bgOpen  : c.bgClosed;
         el.style.color       = isOpen ? c.tcOpen  : c.tcClosed;
-        dot.style.background = isOpen ? c.dotOpen : c.dotClosed;
+        if (dot) dot.style.background = isOpen ? c.dotOpen : c.dotClosed;
         if (c.showBorder) {
             el.style.borderColor = isOpen ? c.borderOpen : c.borderClosed;
         }
-        status.textContent = isOpen ? c.txtOpen : c.txtClosed;
+        if (status) status.textContent = isOpen ? c.txtOpen : c.txtClosed;
 
         if (forced === 'closed') if (forcedMsg) {
             status.textContent = forcedMsg;

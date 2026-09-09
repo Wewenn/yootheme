@@ -51,7 +51,7 @@
         "table_font_size": 13,
         "table_row_gap": 6,
         "table_highlight_today": true,
-        "table_today_bg": "rgba(255,255,255,0.08)",
+        "table_today_bg": "rgba(127,127,127,0.16)",
         "table_today_color": "",
         "table_today_weight": "700",
         "table_closed_text": "Fermé",
@@ -790,7 +790,8 @@
                             "type": "group",
                             "divider": true,
                             "fields": [
-                                "data_source"
+                                "data_source",
+                                "timezone"
                             ]
                         },
                         {

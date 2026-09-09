@@ -1,9 +1,13 @@
-# Revue de WF Restaurant — v1.15.1 → v1.16.0
+# Revue de WF Restaurant — v1.15.1 → v1.17.0
 
 Plugin relu en entier : `wf-restaurant.php` (2318 lignes), `modules/bootstrap.php`
 et les 5 éléments YOOtheme. Le code source corrigé est dans
 [`wf-restaurant/`](wf-restaurant/), le ZIP installable dans
-`dist/wf-restaurant-1.16.0.zip`.
+`dist/wf-restaurant-1.17.0.zip`.
+
+La **1.16.0** répare les deux bugs signalés (« Aujourd'hui » et les icônes) plus
+cinq défauts trouvés en chemin. La **1.17.0** ajoute les services qui passent
+minuit et la refonte du calendrier de réservation — voir la section 6.
 
 **À reporter dans `_sources`.** Comme pour le correctif `container: true`, le
 patch vit ici et dans le ZIP, pas dans tes sources : sans report, la prochaine
@@ -145,31 +149,6 @@ tardait. Remplacé par un GIF transparent en `data:`.
 
 ## 4. Trouvé, pas corrigé — ton arbitrage
 
-**Les services qui passent minuit ne fonctionnent pas.** Partout où une plage
-est lue, le code fait `if ( $c <= $o ) { continue; }`. Un service 19:00 → 01:00
-produit donc **zéro créneau** réservable, et le badge annonce « fermé » toute la
-soirée. Bloquant pour une brasserie ou un bar. Le correctif demande de traiter
-la plage comme deux morceaux (19:00→24:00 et 00:00→01:00) dans
-`wf_resto_is_open_now()`, `wf_resa_gen_slots()` et le JS de l'élément Horaires —
-trois endroits, d'où le fait que je ne l'aie pas fait sans ton feu vert.
-
-**Le tableau des horaires ne rafraîchit jamais « aujourd'hui ».** Le badge est
-recalculé toutes les 60 s en JS, mais la ligne surlignée du tableau est produite
-en PHP et jamais retouchée. Derrière un cache de page — et le plugin en purge
-plusieurs, donc il y en a — le surlignage reste figé sur le jour de la mise en
-cache. À traiter dans `update()` : retirer `wf-rh-today` et le reposer sur la
-ligne du jour.
-
-**Le surlignage par défaut est invisible sur fond clair.** `table_today_bg` vaut
-`rgba(255,255,255,0.08)` : du blanc à 8 % sur du blanc. Si tu me dis que
-« aujourd'hui ne marche pas » visait le tableau et non la page admin, c'est
-probablement ça, et il suffit de changer la valeur par défaut.
-
-**Le champ `timezone` est défini mais absent des onglets** de l'élément
-Horaires : il reste figé sur `Europe/Paris` et personne ne peut le changer. Soit
-le remettre dans un onglet, soit le supprimer — c'est le défaut « champ appelé
-mais jamais atteignable » déjà vu sur les autres éléments.
-
 **Identifiants DOM dupliqués.** Les éléments Horaires et Bandeau construisent
 leur `id` avec `md5()` des réglages, sans passer par `wf_uid()`. Deux badges
 identiques sur une page partagent le même `id` : le HTML devient invalide et le
@@ -195,7 +174,71 @@ l'est pas.
 
 ---
 
-## 5. Idées
+## 5. Ce que la 1.17.0 ajoute
+
+### Les services qui passent minuit
+
+Partout où une plage était lue, le code faisait `if ( $c <= $o ) { continue; }`.
+Un service 19:00 → 01:00 produisait donc **zéro créneau** réservable, et le badge
+annonçait « fermé » toute la soirée : inutilisable pour une brasserie.
+
+La règle vit désormais dans **un seul endroit**, `wf_resto_window()` : quand
+l'heure de fin est plus petite que l'heure de début, elle repasse au-delà de
+minuit — 01:00 devient 1500 minutes. Tout le reste s'en déduit :
+
+- `wf_resto_is_open_now()` teste les plages du jour **puis la queue de la
+  veille** : à 00h30 on est encore dans le service d'hier soir ;
+- `wf_resa_gen_slots()` produit les créneaux jusqu'à 00:00, chacun accompagné
+  de sa **minute absolue** (`min`) — c'est elle qui sert à comparer avec
+  l'heure courante, jamais la chaîne « 00:30 », sinon le dernier créneau du
+  soir serait rejeté comme « déjà passé » ;
+- l'élément Horaires applique la même règle en PHP et en JavaScript, et le
+  tableau affiche « 19h00 – 01h00 » sans se tromper d'heure.
+
+**27 assertions** sur le vrai code du plugin, dont la brasserie fermant à 01:00
+et à 02:00 le week-end, la queue de veille, le dimanche fermé qui ne déborde
+pas, et une régression complète sur un service normal 19:00 → 22:30.
+
+### Le calendrier de réservation
+
+**On ne peut plus remonter dans le passé.** Le chevron « ‹ » se désactive dès le
+mois courant, « › » à la dernière date réservable, et les deux clics sont
+également refusés côté code — pas seulement grisés.
+
+**Le dessin est repris** sur le modèle des captures : carte sobre, mois centré
+entre deux chevrons discrets, grille carrée, jours ouverts à la couleur
+d'accent, jour choisi rempli en arrondi, point sous la date du jour, jours des
+mois voisins en gris clair pour garder la forme de la grille. Un message
+« Aucune date réservable ce mois-ci » remplace une grille muette.
+
+Un défaut trouvé en cours de route : les jours fermés sont des `<span>` et non
+des `<button>`, donc **ils ne centraient pas leur texte** — une colonne sur deux
+partait à gauche. Vu à la capture d'écran, corrigé.
+
+**Nouvelle disposition « Deux colonnes »** (champ *Disposition*, mode Calendrier
+uniquement) : le calendrier fait face aux créneaux sur 880 px, et repasse en une
+colonne sous 720 px. La valeur par défaut reste « compact » : rien ne bouge sur
+les pages déjà en ligne.
+
+**Le tableau des horaires suit enfin le jour courant.** Le surlignage passe par
+la classe `.wf-rh-today` au lieu d'un style en ligne, et le script la déplace à
+chaque mise à jour : derrière un cache de page, la ligne ne reste plus figée sur
+le jour de la mise en cache. Le script tourne maintenant aussi en mode
+« tableau seul ».
+
+**Deux réglages réparés** : le surlignage par défaut passe de
+`rgba(255,255,255,0.08)` — du blanc à 8 % sur du blanc, donc invisible — à un
+gris neutre lisible sur fond clair comme sur fond sombre ; et le champ
+`timezone`, défini mais absent des onglets, redevient atteignable.
+
+**20 assertions** dans un vrai Chromium sur le calendrier : blocage du passé
+dans les deux sens, bornes de navigation, jour du jour marqué, jour fermé
+inerte, date transmise au formulaire, deux colonnes puis une seule sur mobile,
+aucun débordement horizontal.
+
+---
+
+## 6. Idées
 
 ### Ce qui rapporterait le plus, tout de suite
 
@@ -252,12 +295,19 @@ les congés annuels et les fériés français doivent être ressaisis à la main
 
 ## Ce qui a été vérifié, et ce qui ne l'a pas été
 
-**Vérifié :** analyse syntaxique PHP des 6 fichiers (PHP 8.4, 0 erreur), les 5
-`element.json` valides, tous les champs des onglets définis, `icon` et
-`iconSmall` présents partout, et le mécanisme de menu rejoué avec le vrai code
-de WordPress. Sécurité : chaque `admin_post_*` contrôle la capacité **et** le
-nonce, les trois points d'entrée AJAX publics vérifient le nonce, les sorties
-sont échappées — rien à signaler de ce côté.
+**Vérifié :** analyse syntaxique des 15 fichiers PHP (PHP 8.4, 0 erreur), les 5
+`element.json` valides, tous les champs des onglets définis et tous atteignables,
+`icon` et `iconSmall` présents partout. Trois bancs d'essai :
+
+| Banc | Ce qu'il prouve |
+|---|---|
+| `menu-test.php` | Le 403 d'« Aujourd'hui », rejoué avec les vraies fonctions de `wp-admin/includes/plugin.php` — et sa disparition après correctif |
+| `test-minuit.php` | 27 assertions sur les plages débordantes, à partir des fonctions réellement extraites du plugin |
+| `resa-probe.mjs` | 20 assertions sur le calendrier dans un Chromium réel |
+
+Sécurité : chaque `admin_post_*` contrôle la capacité **et** le nonce, les trois
+points d'entrée AJAX publics vérifient le nonce, les sorties sont échappées —
+rien à signaler de ce côté.
 
 **Pas vérifié :** le rendu réel dans WordPress. Ni l'admin, ni les éléments dans
 le builder YOOtheme, ni les envois d'e-mails, ni les notifications push. Le

@@ -3,7 +3,7 @@
  * Plugin Name: WF Restaurant
  * Plugin URI:  https://www.we-frame.fr
  * Description: Éléments YOOtheme pour restaurateurs (Horaires/Statut, Menu, Réservation, Annonce) + une interface mobile ultra-simple (WeFrame → Mon restaurant) : horaires, ouvert/fermé, fermeture exceptionnelle, menu pilotable (plat du jour / épuisé), bandeau d'annonce, et réservations de table reçues sur le site. Les bandeaux du site se mettent à jour tout seuls (source centrale).
- * Version:     1.16.0
+ * Version:     1.17.0
  * Requires PHP: 7.4
  * Author:      WeFrame Studio
  * Author URI:  https://www.we-frame.fr
@@ -13,7 +13,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'WF_RESTO_VER', '1.16.0' );
+define( 'WF_RESTO_VER', '1.17.0' );
 define( 'WF_RESTO_OPT', 'wf_resto' );
 define( 'WF_RESTO_MENU_OPT', 'wf_resto_menu' );
 define( 'WF_RESTO_CAP', 'wf_resto_manage' );
@@ -105,6 +105,45 @@ function wf_resto_time( $v ) {
 	return '';
 }
 
+/**
+ * Plage horaire en minutes depuis minuit : [ début, fin ].
+ *
+ * Un service du soir 19:00 → 01:00 a une heure de fin plus petite que son
+ * heure de début. Le code comparait bêtement les deux et concluait « plage
+ * vide » : zéro créneau réservable et un badge « fermé » toute la soirée.
+ * Ici la fin repasse au-delà de minuit (01:00 devient 1500), et c'est la
+ * seule règle à connaître dans tout le plugin.
+ *
+ * @return array|null [ $debut, $fin ] ou null si la plage est vide.
+ */
+function wf_resto_window( $open, $close ) {
+	$o = wf_resto_hm( $open );
+	$c = wf_resto_hm( $close );
+	if ( null === $o || null === $c ) { return null; }
+	if ( $c === $o ) { return null; }
+	if ( $c < $o ) { $c += 1440; }
+	return array( $o, $c );
+}
+
+/** Les deux plages d'une journée, minuit déjà pris en compte. */
+function wf_resto_day_windows( $row ) {
+	$out = array();
+	if ( empty( $row['enabled'] ) ) { return $out; }
+	foreach ( array( 'lunch', 'dinner' ) as $svc ) {
+		$w = wf_resto_window( $row[ $svc . '_open' ] ?? '', $row[ $svc . '_close' ] ?? '' );
+		if ( $w ) { $out[] = array( 'from' => $w[0], 'to' => $w[1], 'service' => 'lunch' === $svc ? 'midi' : 'soir' ); }
+	}
+	return $out;
+}
+
+/** Clé du jour précédant $key. */
+function wf_resto_prev_day( $key ) {
+	$k = wf_resto_days_keys();
+	$i = array_search( $key, $k, true );
+	if ( false === $i ) { return $k[0]; }
+	return $k[ ( $i + 6 ) % 7 ];
+}
+
 /** Fuseau du restaurant, jamais celui de WordPress. */
 function wf_resto_tz() {
 	$s = wf_resto_get();
@@ -145,12 +184,14 @@ function wf_resto_is_open_now() {
 	$label = 'Fermé';
 	$open  = false;
 
-	$row = $s['days'][ $key ];
-	if ( ! empty( $row['enabled'] ) ) {
-		foreach ( array( array( $row['lunch_open'], $row['lunch_close'] ), array( $row['dinner_open'], $row['dinner_close'] ) ) as $slot ) {
-			$o = wf_resto_hm( $slot[0] );
-			$c = wf_resto_hm( $slot[1] );
-			if ( null !== $o && null !== $c && $min >= $o && $min < $c ) { $open = true; break; }
+	// Les plages du jour, puis la queue de la veille : à 00h30 on est encore
+	// dans le service d'hier soir si celui-ci va jusqu'à 01h00.
+	foreach ( wf_resto_day_windows( $s['days'][ $key ] ) as $w ) {
+		if ( $min >= $w['from'] && $min < $w['to'] ) { $open = true; break; }
+	}
+	if ( ! $open ) {
+		foreach ( wf_resto_day_windows( $s['days'][ wf_resto_prev_day( $key ) ] ) as $w ) {
+			if ( $w['to'] > 1440 && $min < $w['to'] - 1440 ) { $open = true; break; }
 		}
 	}
 	// Exception d'abord, puis override manuel, puis horaires.
@@ -1191,17 +1232,17 @@ function wf_resa_gen_slots( $date ) {
 	$iv  = max( 5, (int) $rz['interval'] );
 	$lb  = max( 0, (int) $rz['last_before'] );
 	$out = array();
-	$svc = array(
-		'midi' => array( $row['lunch_open'], $row['lunch_close'] ),
-		'soir' => array( $row['dinner_open'], $row['dinner_close'] ),
-	);
-	foreach ( $svc as $name => $win ) {
-		$o = wf_resto_hm( $win[0] );
-		$c = wf_resto_hm( $win[1] );
-		if ( null === $o || null === $c || $c <= $o ) { continue; }
-		$last = $c - $lb;
-		for ( $t = $o; $t <= $last; $t += $iv ) {
-			$out[] = array( 'time' => sprintf( '%02d:%02d', intdiv( $t, 60 ), $t % 60 ), 'service' => $name );
+	// « min » est la minute absolue depuis minuit du jour choisi : elle peut
+	// dépasser 1440 pour un service qui finit après minuit. C'est elle qui
+	// sert à comparer avec l'heure courante, jamais la chaîne « 00:30 ».
+	foreach ( wf_resto_day_windows( $row ) as $w ) {
+		$last = $w['to'] - $lb;
+		for ( $t = $w['from']; $t <= $last; $t += $iv ) {
+			$out[] = array(
+				'time'    => sprintf( '%02d:%02d', intdiv( $t, 60 ) % 24, $t % 60 ),
+				'service' => $w['service'],
+				'min'     => $t,
+			);
 		}
 	}
 	return $out;
@@ -1250,7 +1291,12 @@ function wf_resa_availability( $date, $party ) {
 		$rem_slot = $maxslot > 0 ? $maxslot - (int) ( isset( $booked['slots'][ $sl['time'] ] ) ? $booked['slots'][ $sl['time'] ] : 0 ) : PHP_INT_MAX;
 		$rem      = min( $rem_svc, $rem_slot );
 		if ( $rem >= $party ) {
-			$out[] = array( 'time' => $sl['time'], 'service' => $svc, 'remaining' => ( PHP_INT_MAX === $rem ? 0 : $rem ) );
+			$out[] = array(
+				'time'      => $sl['time'],
+				'service'   => $svc,
+				'min'       => isset( $sl['min'] ) ? (int) $sl['min'] : (int) wf_resto_hm( $sl['time'] ),
+				'remaining' => ( PHP_INT_MAX === $rem ? 0 : $rem ),
+			);
 		}
 	}
 	return $out;
@@ -1287,8 +1333,7 @@ function wf_resa_slots_ajax() {
 		$buf     = (int) ( $s['resa']['buffer_min'] ?? 0 );
 		$now_min = wf_resto_now_min() + $buf;
 		$av = array_values( array_filter( $av, function ( $a ) use ( $now_min ) {
-			$hm = wf_resto_hm( $a['time'] );
-			return null !== $hm && $hm >= $now_min;
+			return (int) $a['min'] >= $now_min;
 		} ) );
 	}
 	$g  = array( 'midi' => array(), 'soir' => array() );
@@ -1371,15 +1416,19 @@ function wf_resa_submit() {
 		$service = wf_resa_service_for( $date, $heure );
 		if ( '' === $service ) { wp_send_json_error( 'Ce créneau n’est plus proposé, choisissez-en un autre.' ); }
 		$avail = wf_resa_availability( $date, $couverts );
-		$ok    = false;
-		foreach ( $avail as $a ) { if ( $a['time'] === $heure ) { $ok = true; break; } }
+		$ok     = false;
+		$sel_min = null;
+		foreach ( $avail as $a ) {
+			if ( $a['time'] === $heure ) { $ok = true; $sel_min = (int) $a['min']; break; }
+		}
 		if ( ! $ok ) { wp_send_json_error( 'Désolé, ce service est complet pour ' . $couverts . ' personne(s).' ); }
 		// Le délai minimum n'était filtré que par le JS des créneaux : un POST
-		// rejoué pouvait réserver une heure déjà passée. Le serveur tranche.
+		// rejoué pouvait réserver une heure déjà passée. Le serveur tranche, sur
+		// la minute absolue pour ne pas rejeter un « 00:30 » qui est en fait la
+		// fin du service du soir.
 		if ( $date === $today ) {
-			$hm_sel = wf_resto_hm( $heure );
 			$limite = wf_resto_now_min() + max( 0, (int) ( $store['resa']['buffer_min'] ?? 0 ) );
-			if ( null === $hm_sel || $hm_sel < $limite ) { wp_send_json_error( 'Ce créneau vient de passer, choisissez-en un autre.' ); }
+			if ( $sel_min < $limite ) { wp_send_json_error( 'Ce créneau vient de passer, choisissez-en un autre.' ); }
 		}
 	}
 

@@ -27,6 +27,13 @@ $stx     = $props['slot_text'] ?? '#111111';
 $srad    = max( 0, (int) ( $props['slot_radius'] ?? 100 ) );
 $tstyle  = trim( (string) ( $props['title_style'] ?? '' ) );
 
+// « split » : calendrier et créneaux côte à côte, comme un écran de prise de
+// rendez-vous. Réservé au mode calendrier — la bande de jours n'a pas de sens
+// dans une colonne étroite.
+$layout  = ( ( $props['layout'] ?? 'compact' ) === 'split' ) ? 'split' : 'compact';
+if ( 'calendar' !== ( $props['date_mode'] ?? 'strip' ) ) { $layout = 'compact'; }
+$maxw    = 'split' === $layout ? 880 : 520;
+
 $store      = function_exists( 'wf_resto_get' ) ? wf_resto_get() : array();
 $resa_on    = ! empty( $store['resa']['enabled'] );
 $days_ahead = isset( $store['resa']['days_ahead'] ) ? (int) $store['resa']['days_ahead'] : 30;
@@ -66,7 +73,7 @@ for ( $off = 0; $off <= $scan; $off++ ) {
 }
 ?>
 <?php $wfEl = ( isset( $this ) && is_object( $this ) && method_exists( $this, 'el' ) ) ? $this->el( 'div' ) : null; if ( $wfEl ) { echo $wfEl( $props, isset( $attrs ) ? $attrs : array() ); } ?>
-<div id="<?= esc_attr( $uid ) ?>" class="wf-resa" style="max-width:520px;">
+<div id="<?= esc_attr( $uid ) ?>" class="wf-resa wf-resa--<?= esc_attr( $layout ) ?>" style="max-width:<?= (int) $maxw ?>px;">
     <?php if ( '' !== $title ) : ?><h3 class="wf-resa-title<?= $tstyle ? ' ' . esc_attr( $tstyle ) : '' ?>"<?= $tstyle ? '' : ' style="margin:0 0 6px;font-size:22px;"' ?>><?= esc_html( $title ) ?></h3><?php endif; ?>
     <?php if ( '' !== $intro ) : ?><p class="wf-resa-intro" style="margin:0 0 16px;color:#555;line-height:1.5;"><?= esc_html( $intro ) ?></p><?php endif; ?>
 
@@ -77,6 +84,7 @@ for ( $off = 0; $off <= $scan; $off++ ) {
         </div>
         <label>Téléphone<input type="tel" name="tel" required inputmode="tel" placeholder="06 12 34 56 78"></label>
         <label>Personnes<input type="number" name="couverts" min="1" max="<?= (int) $maxp ?>" value="2" required></label>
+        <div class="wf-resa-pick">
         <div class="wf-resa-dayfield">
             <span class="wf-resa-slabel">Jour</span>
             <?php if ( 'calendar' === $dmode && ! empty( $openSet ) ) : ?>
@@ -104,6 +112,8 @@ for ( $off = 0; $off <= $scan; $off++ ) {
         <?php else : ?>
         <label>Heure<input type="time" name="heure" step="900" required></label>
         <?php endif; ?>
+        </div>
+
 
         <?php if ( $show_em ) : ?><label>E-mail<input type="email" name="email" placeholder="vous@exemple.fr"></label><?php endif; ?>
         <?php if ( $show_no ) : ?><label>Précision (optionnel)<input type="text" name="note" maxlength="140" placeholder="Allergies, anniversaire, terrasse…"></label><?php endif; ?>
@@ -154,15 +164,39 @@ for ( $off = 0; $off <= $scan; $off++ ) {
 /* Créneaux (surcharge) */
 #<?= esc_attr( $uid ) ?> .wf-resa-slot{background:<?= esc_attr( $sbg ) ?>;border-color:<?= esc_attr( $sbd ) ?>;color:<?= esc_attr( $stx ) ?>;border-radius:<?= $srad ?>px}
 #<?= esc_attr( $uid ) ?> .wf-resa-slot.sel{background:<?= esc_attr( $accent ) ?>;border-color:<?= esc_attr( $accent ) ?>;color:#fff}
-/* Calendrier */
-#<?= esc_attr( $uid ) ?> .wf-resa-cal{border:1px solid <?= esc_attr( $fbd ) ?>;border-radius:<?= $rad + 2 ?>px;padding:10px;background:<?= esc_attr( $fbg ) ?>}
-#<?= esc_attr( $uid ) ?> .wf-resa-cal-head{display:flex;align-items:center;justify-content:space-between;font-weight:700;margin-bottom:8px;color:<?= esc_attr( $ftx ) ?>;text-transform:capitalize}
-#<?= esc_attr( $uid ) ?> .wf-resa-cal-nav{border:1px solid <?= esc_attr( $fbd ) ?>;background:#fff;border-radius:8px;width:32px;height:32px;cursor:pointer;font-size:18px;line-height:1;color:<?= esc_attr( $ftx ) ?>}
-#<?= esc_attr( $uid ) ?> .wf-resa-cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
-#<?= esc_attr( $uid ) ?> .wf-resa-cal-wd{text-align:center;font-size:11px;color:#999;font-weight:700;padding-bottom:2px}
-#<?= esc_attr( $uid ) ?> .wf-resa-cal-d{border:0;background:<?= esc_attr( $dbg ) ?>;border-radius:8px;aspect-ratio:1;cursor:pointer;font-size:14px;font-weight:600;color:<?= esc_attr( $dtx ) ?>}
-#<?= esc_attr( $uid ) ?> .wf-resa-cal-d.off{opacity:.28;cursor:not-allowed;background:transparent}
-#<?= esc_attr( $uid ) ?> .wf-resa-cal-d.sel{background:<?= esc_attr( $accent ) ?>;color:#fff}
+/* ── Calendrier ──────────────────────────────────────────────────────
+   Une carte sobre : le mois au centre, deux chevrons, une grille carrée.
+   Les jours ouverts prennent la couleur d'accent, le jour choisi se remplit,
+   le jour courant porte un point. Les mois hors période sont inatteignables :
+   les chevrons se désactivent au lieu de laisser filer vers le passé. */
+#<?= esc_attr( $uid ) ?> .wf-resa-cal{border:1px solid <?= esc_attr( $fbd ) ?>;border-radius:<?= $rad + 4 ?>px;padding:14px;background:<?= esc_attr( $fbg ) ?>}
+#<?= esc_attr( $uid ) ?> .wf-resa-cal-head{display:grid;grid-template-columns:32px 1fr 32px;align-items:center;margin-bottom:10px}
+#<?= esc_attr( $uid ) ?> .wf-resa-cal-title{text-align:center;font-weight:600;font-size:15px;color:<?= esc_attr( $ftx ) ?>;text-transform:capitalize;letter-spacing:-.01em}
+#<?= esc_attr( $uid ) ?> .wf-resa-cal-nav{border:0;background:transparent;border-radius:8px;width:32px;height:32px;cursor:pointer;font-size:17px;line-height:1;color:<?= esc_attr( $ftx ) ?>;display:flex;align-items:center;justify-content:center;transition:background .15s}
+#<?= esc_attr( $uid ) ?> .wf-resa-cal-nav:hover:not([disabled]){background:rgba(127,127,127,.12)}
+#<?= esc_attr( $uid ) ?> .wf-resa-cal-nav[disabled]{opacity:.25;cursor:default}
+#<?= esc_attr( $uid ) ?> .wf-resa-cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
+#<?= esc_attr( $uid ) ?> .wf-resa-cal-wd{text-align:center;font-size:11px;color:#9ca3af;font-weight:500;padding-bottom:6px}
+/* display:flex — un jour fermé est un <span>, qui ne centre pas son texte
+   comme un <button> : sans ça, une colonne sur deux part à gauche. */
+#<?= esc_attr( $uid ) ?> .wf-resa-cal-d{position:relative;display:flex;align-items:center;justify-content:center;border:0;padding:0;background:transparent;border-radius:10px;aspect-ratio:1;cursor:pointer;font:inherit;font-size:14px;font-weight:500;line-height:1;color:<?= esc_attr( $accent ) ?>;font-variant-numeric:tabular-nums;transition:background .15s,color .15s}
+#<?= esc_attr( $uid ) ?> .wf-resa-cal-d:hover:not([disabled]){background:rgba(127,127,127,.10)}
+#<?= esc_attr( $uid ) ?> .wf-resa-cal-d.off{color:#c9ccd1;cursor:default;font-weight:400}
+#<?= esc_attr( $uid ) ?> .wf-resa-cal-d.pad{color:#dcdee2;cursor:default;font-weight:400}
+#<?= esc_attr( $uid ) ?> .wf-resa-cal-d.now::after{content:"";position:absolute;left:50%;bottom:5px;width:3px;height:3px;margin-left:-1.5px;border-radius:50%;background:currentColor}
+#<?= esc_attr( $uid ) ?> .wf-resa-cal-d.sel{background:<?= esc_attr( $accent ) ?>;color:#fff;font-weight:600}
+#<?= esc_attr( $uid ) ?> .wf-resa-cal-d.sel:hover{background:<?= esc_attr( $accent ) ?>}
+#<?= esc_attr( $uid ) ?> .wf-resa-cal-none{margin:10px 2px 0;font-size:12.5px;color:#9ca3af;text-align:center}
+
+/* ── Panneau des créneaux ─────────────────────────────────────────── */
+#<?= esc_attr( $uid ) ?>.wf-resa--split .wf-resa-pick{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}
+#<?= esc_attr( $uid ) ?>.wf-resa--split .wf-resa-slotwrap{border:1px solid <?= esc_attr( $fbd ) ?>;border-radius:<?= $rad + 4 ?>px;padding:14px;background:<?= esc_attr( $fbg ) ?>;min-height:100%}
+#<?= esc_attr( $uid ) ?>.wf-resa--split .wf-resa-slotrow{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+#<?= esc_attr( $uid ) ?>.wf-resa--split .wf-resa-slot{text-align:center}
+@media(max-width:720px){
+	#<?= esc_attr( $uid ) ?>.wf-resa--split .wf-resa-pick{grid-template-columns:1fr}
+	#<?= esc_attr( $uid ) ?>.wf-resa--split .wf-resa-slotwrap{min-height:0}
+}
 </style>
 
 <script>
@@ -269,35 +303,99 @@ for ( $off = 0; $off <= $scan; $off++ ) {
         var openArr = [];
         try { openArr = JSON.parse(calEl.getAttribute('data-open') || '[]'); } catch (er) { openArr = []; }
         var openMap = {}; for (var oi = 0; oi < openArr.length; oi++){ openMap[openArr[oi]] = true; }
-        var firstOpen = openArr.length ? openArr[0] : (calEl.getAttribute('data-min') || '');
+        var minDate   = calEl.getAttribute('data-min') || '';
+        var maxDate   = calEl.getAttribute('data-max') || '';
+        var firstOpen = openArr.length ? openArr[0] : minDate;
         var selDate = '';
-        var wdays  = ['Lun','Mar','Mer','Jeu','Ven','Sam','Dim'];
+        var wdays  = ['Lu','Ma','Me','Je','Ve','Sa','Di'];
         var mnames = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
-        var view = firstOpen ? new Date(firstOpen + 'T00:00:00') : new Date();
+        var view = new Date((firstOpen || minDate) + 'T00:00:00');
+        if (isNaN(view.getTime())) { view = new Date(); }
+
         function pad2(n){ return (n < 10 ? '0' : '') + n; }
         function ymd(y, m, d){ return y + '-' + pad2(m + 1) + '-' + pad2(d); }
+        // Un mois se compare comme un entier : plus simple et sans surprise de
+        // fuseau qu'une comparaison de dates.
+        function ymOf(s){ return s ? parseInt(s.slice(0, 4), 10) * 12 + parseInt(s.slice(5, 7), 10) - 1 : null; }
+        var minYM = ymOf(minDate);
+        var maxYM = ymOf(maxDate);
+
+        function clampView(){
+            var cur = view.getFullYear() * 12 + view.getMonth();
+            if (minYM !== null) if (cur < minYM) { view = new Date(Math.floor(minYM / 12), minYM % 12, 1); }
+            cur = view.getFullYear() * 12 + view.getMonth();
+            if (maxYM !== null) if (cur > maxYM) { view = new Date(Math.floor(maxYM / 12), maxYM % 12, 1); }
+        }
+
         function renderCal(){
+            clampView();
             var y = view.getFullYear(), m = view.getMonth();
-            var startWd = (new Date(y, m, 1).getDay() + 6) % 7;
-            var ndays = new Date(y, m + 1, 0).getDate();
-            var h = '<div class="wf-resa-cal-head"><button type="button" class="wf-resa-cal-nav" data-d="-1">‹</button><span>' + mnames[m] + ' ' + y + '</span><button type="button" class="wf-resa-cal-nav" data-d="1">›</button></div><div class="wf-resa-cal-grid">';
+            var cur = y * 12 + m;
+            var startWd = (new Date(y, m, 1).getDay() + 6) % 7;   // lundi en tête
+            var ndays   = new Date(y, m + 1, 0).getDate();
+            var prevN   = new Date(y, m, 0).getDate();
+            // On ne remonte jamais avant le mois courant, ni au-delà de la
+            // dernière date réservable : les chevrons se désactivent.
+            var noPrev = (minYM !== null) ? (cur <= minYM) : false;
+            var noNext = (maxYM !== null) ? (cur >= maxYM) : false;
+
+            var h = '<div class="wf-resa-cal-head">'
+                  + '<button type="button" class="wf-resa-cal-nav" data-d="-1" aria-label="Mois précédent"' + (noPrev ? ' disabled' : '') + '>&lsaquo;</button>'
+                  + '<span class="wf-resa-cal-title" aria-live="polite">' + mnames[m] + ' ' + y + '</span>'
+                  + '<button type="button" class="wf-resa-cal-nav" data-d="1" aria-label="Mois suivant"' + (noNext ? ' disabled' : '') + '>&rsaquo;</button>'
+                  + '</div><div class="wf-resa-cal-grid" role="grid">';
+
             for (var w = 0; w < 7; w++){ h += '<span class="wf-resa-cal-wd">' + wdays[w] + '</span>'; }
-            for (var s = 0; s < startWd; s++){ h += '<span></span>'; }
+            // Jours du mois précédent, en gris : la grille garde sa forme.
+            for (var s = startWd; s > 0; s--){
+                h += '<span class="wf-resa-cal-d pad">' + (prevN - s + 1) + '</span>';
+            }
             for (var dd = 1; dd <= ndays; dd++){
                 var ds = ymd(y, m, dd);
                 var open = openMap[ds] === true;
-                var cls = 'wf-resa-cal-d'; if (!open){ cls += ' off'; } if (ds === selDate){ cls += ' sel'; }
-                h += '<button type="button" class="' + cls + '" data-date="' + ds + '"' + (open ? '' : ' disabled') + '>' + dd + '</button>';
+                var cls = 'wf-resa-cal-d';
+                if (!open) { cls += ' off'; }
+                if (ds === minDate) { cls += ' now'; }
+                if (ds === selDate) { cls += ' sel'; }
+                if (open) {
+                    h += '<button type="button" class="' + cls + '" data-date="' + ds + '"'
+                       + (ds === selDate ? ' aria-current="date"' : '') + '>' + dd + '</button>';
+                } else {
+                    h += '<span class="' + cls + '" aria-disabled="true">' + dd + '</span>';
+                }
             }
+            // Jours du mois suivant pour compléter la dernière ligne.
+            var used = startWd + ndays, tail = (7 - (used % 7)) % 7;
+            for (var t = 1; t <= tail; t++){ h += '<span class="wf-resa-cal-d pad">' + t + '</span>'; }
             h += '</div>';
+
+            var monthHasOpen = false;
+            for (var k = 0; k < openArr.length; k++){
+                if (ymOf(openArr[k]) === cur) { monthHasOpen = true; break; }
+            }
+            if (!monthHasOpen) { h += '<p class="wf-resa-cal-none">Aucune date réservable ce mois-ci.</p>'; }
+
             calEl.innerHTML = h;
         }
+
         calEl.addEventListener('click', function(e){
             var nav = e.target.closest ? e.target.closest('.wf-resa-cal-nav') : null;
-            if (nav){ view.setMonth(view.getMonth() + parseInt(nav.getAttribute('data-d'), 10)); renderCal(); return; }
-            var cell = e.target.closest ? e.target.closest('.wf-resa-cal-d') : null;
-            if (cell){ if (cell.disabled){ return; } selDate = cell.getAttribute('data-date'); dateEl.value = selDate; renderCal(); onDate(); }
+            if (nav){
+                if (nav.disabled) { return; }
+                view.setDate(1);
+                view.setMonth(view.getMonth() + parseInt(nav.getAttribute('data-d'), 10));
+                renderCal();
+                return;
+            }
+            var cell = e.target.closest ? e.target.closest('button.wf-resa-cal-d') : null;
+            if (cell){
+                selDate = cell.getAttribute('data-date');
+                dateEl.value = selDate;
+                renderCal();
+                onDate();
+            }
         });
+
         renderCal();
         if (cfg.slots){ if (firstOpen){ selDate = firstOpen; dateEl.value = firstOpen; renderCal(); onDate(); } }
     }
