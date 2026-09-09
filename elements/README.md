@@ -11,7 +11,21 @@ collections saisies avec le champ natif « Articles » (`content-items`).
 | `perspective-slider/` | `wf_persp_slider` | Carrousel perspective infini | WeFrame · Scroll & Images |
 | `perspective-slider-item/` | `wf_persp_slider_item` | Image (carrousel perspective) | WeFrame · Scroll & Images |
 
-## Installation
+## ZIP prêt à installer
+
+`dist/wf-yoo-elements-sans-wc-6.29.0.zip` — le plugin complet, variante **sans
+WooCommerce**, avec les trois éléments ci-dessus **et** le correctif
+`container: true` décrit dans [CORRECTIF-container-true.md](CORRECTIF-container-true.md).
+199 éléments, 1009 fichiers ; par rapport au ZIP 6.28.0, 15 fichiers ajoutés,
+5 modifiés, aucun supprimé.
+
+La variante complète (avec WooCommerce) n'a pas pu être régénérée : ses sources
+n'ont pas été fournies. À rebâtir depuis `_sources` une fois les deux
+changements reportés.
+
+**Vider le cache YOOtheme après l'installation.**
+
+## Installation depuis les sources
 
 L'arborescence sous `elements/` reproduit celle du plugin. Il suffit donc de
 recopier les trois dossiers :
@@ -30,8 +44,11 @@ python build_elements.py 6.29.0
 ```
 
 `bootstrap.php` charge les éléments avec `./element/*/element.json` : rien à
-déclarer, les trois dossiers sont pris automatiquement. **Vider le cache
-YOOtheme après l'installation du ZIP.**
+déclarer, les trois dossiers sont pris automatiquement.
+
+Penser à reporter aussi le correctif `container: true` (quatre lignes, voir
+[CORRECTIF-container-true.md](CORRECTIF-container-true.md)) : sans lui, un
+rebuild depuis `_sources` ferait ressortir le bug que le ZIP livré corrige.
 
 ---
 
