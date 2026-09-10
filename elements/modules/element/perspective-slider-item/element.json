@@ -1,0 +1,48 @@
+{
+    "name": "wf_persp_slider_item",
+    "title": "Image (carrousel perspective)",
+    "group": "WeFrame · Scroll & Images",
+    "icon": "${url:images/ic30.svg}",
+    "iconSmall": "${url:images/ic30.svg}",
+    "templates": {
+        "render": "./template.php"
+    },
+    "defaults": {
+        "image": "",
+        "title": "",
+        "link": ""
+    },
+    "fields": {
+        "image": {
+            "label": "Image",
+            "type": "image",
+            "source": true
+        },
+        "title": {
+            "label": "Titre / texte alternatif",
+            "type": "text",
+            "source": true,
+            "description": "Sert de texte alternatif et, si la légende est activée sur le carrousel, de légende affichée."
+        },
+        "link": {
+            "label": "Lien (optionnel)",
+            "type": "link",
+            "source": true
+        }
+    },
+    "fieldset": {
+        "default": {
+            "type": "tabs",
+            "fields": [
+                {
+                    "title": "Image",
+                    "fields": [
+                        "image",
+                        "title",
+                        "link"
+                    ]
+                }
+            ]
+        }
+    }
+}

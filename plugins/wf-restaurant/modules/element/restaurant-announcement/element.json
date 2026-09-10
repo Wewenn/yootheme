@@ -1,0 +1,178 @@
+{
+    "name": "wf_restaurant_announcement",
+    "title": "Bandeau annonce",
+    "group": "WeFrame · Restaurant",
+    "icon": "${url:images/ic30.svg}",
+    "element": true,
+    "width": 480,
+    "defaults": {
+        "data_source": "central",
+        "message": "Terrasse ouverte ce week-end !",
+        "link_text": "",
+        "link_url": "",
+        "bg": "#111111",
+        "color": "#ffffff",
+        "dismissible": true,
+        "align": "center"
+    },
+    "templates": {
+        "render": "./template.php"
+    },
+    "fields": {
+        "data_source": {
+            "label": "Source",
+            "type": "select",
+            "options": {
+                "Réglages du restaurant (pilotable au téléphone)": "central",
+                "Cet élément (message fixe)": "inline"
+            },
+            "description": "« Réglages du restaurant » : le message et son activation se gèrent depuis WeFrame → Mon restaurant."
+        },
+        "message": {
+            "label": "Message (mode fixe)",
+            "type": "text",
+            "source": true
+        },
+        "link_text": {
+            "label": "Texte du lien (mode fixe)",
+            "type": "text",
+            "source": true
+        },
+        "link_url": {
+            "label": "Lien (mode fixe)",
+            "type": "text",
+            "source": true
+        },
+        "bg": {
+            "label": "Fond",
+            "type": "color"
+        },
+        "color": {
+            "label": "Texte",
+            "type": "color"
+        },
+        "align": {
+            "label": "Alignement",
+            "type": "select",
+            "options": {
+                "Gauche": "left",
+                "Centre": "center",
+                "Droite": "right"
+            }
+        },
+        "dismissible": {
+            "label": "Fermable",
+            "type": "checkbox",
+            "text": "Le visiteur peut fermer le bandeau"
+        },
+        "animation": "${builder.animation}",
+        "visibility": "${builder.visibility}",
+        "position": "${builder.position}",
+        "blend": "${builder.blend}",
+        "name": "${builder.name}",
+        "status": "${builder.status}",
+        "source": "${builder.source}",
+        "id": "${builder.id}",
+        "transform": "${builder.transform}",
+        "class": {
+            "label": "Classes",
+            "type": "text",
+            "source": true,
+            "description": "Un ou plusieurs noms de classe pour l'element (separes par des espaces)."
+        },
+        "css": {
+            "label": "CSS",
+            "type": "editor",
+            "mode": "css",
+            "source": true,
+            "attrs": {
+                "debounce": 500
+            },
+            "description": "Styles CSS personnalises pour cet element."
+        },
+        "attributes": {
+            "label": "Attributs",
+            "type": "editor",
+            "source": true,
+            "attrs": {
+                "debounce": 500
+            },
+            "description": "Un attribut par ligne, au format nom=valeur."
+        },
+        "margin": "${builder.margin}",
+        "maxwidth": "${builder.maxwidth}"
+    },
+    "fieldset": {
+        "default": {
+            "type": "tabs",
+            "fields": [
+                {
+                    "title": "Contenu",
+                    "fields": [
+                        {
+                            "label": "Source",
+                            "type": "group",
+                            "divider": true,
+                            "fields": [
+                                "data_source"
+                            ]
+                        },
+                        {
+                            "label": "Message fixe",
+                            "type": "group",
+                            "divider": true,
+                            "fields": [
+                                "message",
+                                "link_text",
+                                "link_url"
+                            ]
+                        },
+                        {
+                            "label": "Style",
+                            "type": "group",
+                            "divider": true,
+                            "fields": [
+                                "bg",
+                                "color",
+                                "align",
+                                "dismissible"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "title": "Paramètres",
+                    "fields": [
+                        {
+                            "label": "Général",
+                            "type": "group",
+                            "divider": true,
+                            "fields": [
+                                "position",
+                                "maxwidth",
+                                "margin",
+                                "blend",
+                                "animation",
+                                "visibility"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "title": "Avancé",
+                    "fields": [
+                        "name",
+                        "status",
+                        "source",
+                        "id",
+                        "class",
+                        "attributes",
+                        "css",
+                        "transform"
+                    ]
+                }
+            ]
+        }
+    },
+    "iconSmall": "${url:images/ic30.svg}"
+}

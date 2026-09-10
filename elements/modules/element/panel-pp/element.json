@@ -1,0 +1,648 @@
+{
+    "name": "wf_panel_pp",
+    "title": "Panneau ++",
+    "group": "WeFrame · Contenu & Sections",
+    "icon": "${url:images/ic30.svg}",
+    "iconSmall": "${url:images/ic30.svg}",
+    "element": true,
+    "container": true,
+    "fragment": true,
+    "width": 560,
+    "defaults": {
+        "content": "",
+        "bg_color": "#f4f4f5",
+        "bg_image": "",
+        "bg_position": "50% 50%",
+        "bg_size": "cover",
+        "bg_repeat": "no-repeat",
+        "bg_fixed": false,
+        "bg_blur": 0,
+        "ov_color": "#000000",
+        "ov_opacity": 0,
+        "radius": 16,
+        "min_height": 0,
+        "border_color": "",
+        "border_width": 0,
+        "shadow": "none",
+        "media_side": "right",
+        "media_width": 42,
+        "media_width_tablet": 45,
+        "gap": 0,
+        "valign": "center",
+        "content_align": "left",
+        "content_max": 0,
+        "pad_x": 48,
+        "pad_y": 48,
+        "pad_x_mobile": 24,
+        "pad_y_mobile": 32,
+        "image": "",
+        "image_alt": "",
+        "image_pad": "none",
+        "image_pad_value": 24,
+        "image_fit": "cover",
+        "image_pos": "50% 50%",
+        "image_radius": 12,
+        "image_ratio": "auto",
+        "image_height": 0,
+        "image_link": "",
+        "image_hover": "none",
+        "stack_at": "959",
+        "stack_order": "after",
+        "image_height_mobile": 240,
+        "hide_image_mobile": false,
+        "align_mobile": "inherit"
+    },
+    "templates": {
+        "render": "./template.php"
+    },
+    "fields": {
+        "sublayout": {
+            "type": "builder-fragment"
+        },
+        "content": {
+            "label": "Contenu de secours",
+            "type": "editor",
+            "source": true,
+            "description": "Utilisé uniquement si la sous-mise en page ci-dessus est vide."
+        },
+        "bg_color": {
+            "label": "Couleur de fond",
+            "type": "color",
+            "description": "Vide = transparent."
+        },
+        "bg_image": {
+            "label": "Image de fond",
+            "type": "image",
+            "source": true,
+            "description": "Couvre tout le panneau, derrière le contenu et l'image latérale."
+        },
+        "bg_position": {
+            "label": "Cadrage du fond",
+            "type": "select",
+            "options": {
+                "Centre": "50% 50%",
+                "Haut": "50% 0%",
+                "Bas": "50% 100%",
+                "Gauche": "0% 50%",
+                "Droite": "100% 50%",
+                "Haut gauche": "0% 0%",
+                "Haut droite": "100% 0%",
+                "Bas gauche": "0% 100%",
+                "Bas droite": "100% 100%"
+            },
+            "enable": "bg_image"
+        },
+        "bg_size": {
+            "label": "Taille du fond",
+            "type": "select",
+            "options": {
+                "Remplir (cover)": "cover",
+                "Contenir (contain)": "contain",
+                "Taille réelle": "auto"
+            },
+            "enable": "bg_image"
+        },
+        "bg_repeat": {
+            "label": "Répétition du fond",
+            "type": "select",
+            "options": {
+                "Aucune": "no-repeat",
+                "Mosaïque": "repeat",
+                "Horizontale": "repeat-x",
+                "Verticale": "repeat-y"
+            },
+            "enable": "bg_image"
+        },
+        "bg_fixed": {
+            "label": "Fond fixe",
+            "type": "checkbox",
+            "text": "Le fond reste fixe au défilement",
+            "enable": "bg_image",
+            "description": "Ignoré sur mobile : iOS ne sait pas l'afficher correctement."
+        },
+        "bg_blur": {
+            "label": "Flou du fond (px)",
+            "type": "number",
+            "attrs": {
+                "min": 0,
+                "max": 40,
+                "step": 1
+            },
+            "enable": "bg_image"
+        },
+        "ov_color": {
+            "label": "Voile par-dessus le fond",
+            "type": "color",
+            "enable": "bg_image",
+            "description": "Assombrit ou teinte l'image pour garder le texte lisible."
+        },
+        "ov_opacity": {
+            "label": "Opacité du voile (%)",
+            "type": "number",
+            "attrs": {
+                "min": 0,
+                "max": 100,
+                "step": 5
+            },
+            "enable": "bg_image"
+        },
+        "radius": {
+            "label": "Arrondi du panneau (px)",
+            "type": "number",
+            "attrs": {
+                "min": 0,
+                "max": 80,
+                "step": 1
+            },
+            "source": true
+        },
+        "min_height": {
+            "label": "Hauteur minimale (px)",
+            "type": "number",
+            "attrs": {
+                "min": 0,
+                "max": 1200,
+                "step": 10
+            },
+            "source": true,
+            "description": "0 = la hauteur vient du contenu."
+        },
+        "border_color": {
+            "label": "Bordure",
+            "type": "color",
+            "description": "Vide = aucune bordure."
+        },
+        "border_width": {
+            "label": "Épaisseur de la bordure (px)",
+            "type": "number",
+            "attrs": {
+                "min": 0,
+                "max": 8,
+                "step": 1
+            },
+            "enable": "border_color"
+        },
+        "shadow": {
+            "label": "Ombre",
+            "type": "select",
+            "options": {
+                "Aucune": "none",
+                "Douce": "soft",
+                "Marquée": "strong"
+            }
+        },
+        "media_side": {
+            "label": "Position de l'image",
+            "type": "select",
+            "options": {
+                "À droite": "right",
+                "À gauche": "left",
+                "Au-dessus": "top",
+                "En dessous": "bottom",
+                "Aucune image": "none"
+            },
+            "description": "« Aucune image » laisse le panneau sur une seule colonne."
+        },
+        "media_width": {
+            "label": "Largeur de l'image (%)",
+            "type": "number",
+            "attrs": {
+                "min": 15,
+                "max": 75,
+                "step": 1
+            },
+            "source": true,
+            "enable": "media_side === 'left' || media_side === 'right'"
+        },
+        "media_width_tablet": {
+            "label": "Largeur de l'image sur tablette (%)",
+            "type": "number",
+            "attrs": {
+                "min": 15,
+                "max": 75,
+                "step": 1
+            },
+            "source": true,
+            "enable": "media_side === 'left' || media_side === 'right'"
+        },
+        "gap": {
+            "label": "Écart contenu / image (px)",
+            "type": "number",
+            "attrs": {
+                "min": 0,
+                "max": 120,
+                "step": 2
+            },
+            "source": true,
+            "description": "0 pour une image collée au contenu, comme sur un panneau à fond perdu.",
+            "enable": "media_side !== 'none'"
+        },
+        "valign": {
+            "label": "Alignement vertical du contenu",
+            "type": "select",
+            "options": {
+                "Haut": "start",
+                "Centre": "center",
+                "Bas": "end"
+            }
+        },
+        "content_align": {
+            "label": "Alignement du texte",
+            "type": "select",
+            "options": {
+                "Gauche": "left",
+                "Centre": "center",
+                "Droite": "right"
+            }
+        },
+        "content_max": {
+            "label": "Largeur maximale du contenu (px)",
+            "type": "number",
+            "attrs": {
+                "min": 0,
+                "max": 1000,
+                "step": 10
+            },
+            "source": true,
+            "description": "0 = toute la colonne."
+        },
+        "pad_x": {
+            "label": "Marge intérieure horizontale (px)",
+            "type": "number",
+            "attrs": {
+                "min": 0,
+                "max": 160,
+                "step": 2
+            },
+            "source": true
+        },
+        "pad_y": {
+            "label": "Marge intérieure verticale (px)",
+            "type": "number",
+            "attrs": {
+                "min": 0,
+                "max": 160,
+                "step": 2
+            },
+            "source": true
+        },
+        "pad_x_mobile": {
+            "label": "Marge horizontale sur mobile (px)",
+            "type": "number",
+            "attrs": {
+                "min": 0,
+                "max": 120,
+                "step": 2
+            },
+            "source": true
+        },
+        "pad_y_mobile": {
+            "label": "Marge verticale sur mobile (px)",
+            "type": "number",
+            "attrs": {
+                "min": 0,
+                "max": 120,
+                "step": 2
+            },
+            "source": true
+        },
+        "image": {
+            "label": "Image",
+            "type": "image",
+            "source": true,
+            "enable": "media_side !== 'none'"
+        },
+        "image_alt": {
+            "label": "Texte alternatif",
+            "type": "text",
+            "source": true,
+            "description": "Décrit l'image pour les lecteurs d'écran et Google. Laisser vide seulement si l'image est purement décorative — et jamais si elle porte un lien, sinon le lien n'a plus de nom.",
+            "enable": "media_side !== 'none'"
+        },
+        "image_pad": {
+            "label": "Marge autour de l'image",
+            "type": "select",
+            "options": {
+                "Aucune — à fond perdu": "none",
+                "La même que le contenu": "panel",
+                "Personnalisée": "custom"
+            },
+            "description": "« À fond perdu » colle l'image aux bords du panneau, comme sur un panneau hero.",
+            "enable": "media_side !== 'none'"
+        },
+        "image_pad_value": {
+            "label": "Marge personnalisée (px)",
+            "type": "number",
+            "attrs": {
+                "min": 0,
+                "max": 120,
+                "step": 2
+            },
+            "source": true,
+            "enable": "media_side !== 'none' && image_pad === 'custom'"
+        },
+        "image_fit": {
+            "label": "Cadrage de l'image",
+            "type": "select",
+            "options": {
+                "Remplir (cover)": "cover",
+                "Contenir (contain)": "contain"
+            },
+            "enable": "media_side !== 'none'"
+        },
+        "image_pos": {
+            "label": "Point de cadrage",
+            "type": "select",
+            "options": {
+                "Centre": "50% 50%",
+                "Haut": "50% 0%",
+                "Bas": "50% 100%",
+                "Gauche": "0% 50%",
+                "Droite": "100% 50%"
+            },
+            "description": "Le point de l'image qui reste visible quand elle est rognée.",
+            "enable": "media_side !== 'none' && image_fit === 'cover'"
+        },
+        "image_radius": {
+            "label": "Arrondi de l'image (px)",
+            "type": "number",
+            "attrs": {
+                "min": 0,
+                "max": 80,
+                "step": 1
+            },
+            "source": true,
+            "description": "À fond perdu, l'image suit déjà l'arrondi du panneau.",
+            "enable": "media_side !== 'none' && image_pad !== 'none'"
+        },
+        "image_ratio": {
+            "label": "Proportions de l'image",
+            "type": "select",
+            "options": {
+                "Automatique": "auto",
+                "Carré (1:1)": "1/1",
+                "Paysage (4:3)": "4/3",
+                "Paysage (3:2)": "3/2",
+                "Panoramique (16:9)": "16/9",
+                "Portrait (3:4)": "3/4",
+                "Portrait (4:5)": "4/5"
+            },
+            "enable": "media_side !== 'none'"
+        },
+        "image_height": {
+            "label": "Hauteur de l'image (px)",
+            "type": "number",
+            "attrs": {
+                "min": 0,
+                "max": 900,
+                "step": 10
+            },
+            "source": true,
+            "description": "0 = l'image s'étire sur toute la hauteur du panneau. Ignoré si des proportions sont choisies.",
+            "enable": "media_side !== 'none' && image_ratio === 'auto'"
+        },
+        "image_link": {
+            "label": "Lien de l'image",
+            "type": "link",
+            "source": true,
+            "enable": "media_side !== 'none'"
+        },
+        "image_hover": {
+            "label": "Effet au survol",
+            "type": "select",
+            "options": {
+                "Aucun": "none",
+                "Zoom léger": "zoom",
+                "Légère montée": "lift"
+            },
+            "description": "Désactivé si le visiteur a demandé moins d'animations.",
+            "enable": "media_side !== 'none'"
+        },
+        "stack_at": {
+            "label": "Empiler à partir de",
+            "type": "select",
+            "options": {
+                "Tablette (≤ 959 px)": "959",
+                "Mobile (≤ 639 px)": "639",
+                "Jamais": "0"
+            },
+            "description": "En dessous de cette largeur, le contenu et l'image passent l'un sous l'autre."
+        },
+        "stack_order": {
+            "label": "Une fois empilé, l'image passe",
+            "type": "select",
+            "options": {
+                "Après le contenu": "after",
+                "Avant le contenu": "before"
+            },
+            "enable": "stack_at !== '0'"
+        },
+        "image_height_mobile": {
+            "label": "Hauteur de l'image une fois empilée (px)",
+            "type": "number",
+            "attrs": {
+                "min": 0,
+                "max": 700,
+                "step": 10
+            },
+            "source": true,
+            "description": "0 = laisser l'image à ses proportions naturelles.",
+            "enable": "stack_at !== '0'"
+        },
+        "hide_image_mobile": {
+            "label": "Image sur mobile",
+            "type": "checkbox",
+            "text": "Masquer l'image sur mobile (≤ 639 px)"
+        },
+        "align_mobile": {
+            "label": "Alignement du texte sur mobile",
+            "type": "select",
+            "options": {
+                "Comme sur ordinateur": "inherit",
+                "Gauche": "left",
+                "Centre": "center"
+            }
+        },
+        "animation": "${builder.animation}",
+        "visibility": "${builder.visibility}",
+        "name": "${builder.name}",
+        "status": "${builder.status}",
+        "source": "${builder.source}",
+        "id": "${builder.id}",
+        "transform": "${builder.transform}",
+        "position": "${builder.position}",
+        "blend": "${builder.blend}",
+        "class": {
+            "label": "Classes",
+            "type": "text",
+            "source": true,
+            "description": "Un ou plusieurs noms de classe pour l'element (separes par des espaces)."
+        },
+        "css": {
+            "label": "CSS",
+            "type": "editor",
+            "mode": "css",
+            "source": true,
+            "attrs": {
+                "debounce": 500
+            },
+            "description": "Styles CSS personnalises pour cet element."
+        },
+        "attributes": {
+            "label": "Attributs",
+            "type": "editor",
+            "source": true,
+            "attrs": {
+                "debounce": 500
+            },
+            "description": "Un attribut par ligne, au format nom=valeur."
+        },
+        "margin": "${builder.margin}",
+        "maxwidth": "${builder.maxwidth}"
+    },
+    "fieldset": {
+        "default": {
+            "type": "tabs",
+            "fields": [
+                {
+                    "title": "Contenu",
+                    "fields": [
+                        "sublayout",
+                        "content"
+                    ]
+                },
+                {
+                    "title": "Panneau",
+                    "fields": [
+                        {
+                            "label": "Fond",
+                            "type": "group",
+                            "divider": true,
+                            "fields": [
+                                "bg_color",
+                                "bg_image",
+                                "bg_position",
+                                "bg_size",
+                                "bg_repeat",
+                                "bg_fixed",
+                                "bg_blur",
+                                "ov_color",
+                                "ov_opacity"
+                            ]
+                        },
+                        {
+                            "label": "Cadre",
+                            "type": "group",
+                            "divider": true,
+                            "fields": [
+                                "radius",
+                                "min_height",
+                                "border_color",
+                                "border_width",
+                                "shadow"
+                            ]
+                        },
+                        {
+                            "label": "Disposition",
+                            "type": "group",
+                            "divider": true,
+                            "fields": [
+                                "media_side",
+                                "media_width",
+                                "media_width_tablet",
+                                "gap",
+                                "valign",
+                                "content_align",
+                                "content_max"
+                            ]
+                        },
+                        {
+                            "label": "Marges intérieures",
+                            "type": "group",
+                            "divider": true,
+                            "fields": [
+                                "pad_x",
+                                "pad_y",
+                                "pad_x_mobile",
+                                "pad_y_mobile"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "title": "Image",
+                    "fields": [
+                        {
+                            "label": "Visuel",
+                            "type": "group",
+                            "divider": true,
+                            "fields": [
+                                "image",
+                                "image_alt",
+                                "image_link"
+                            ]
+                        },
+                        {
+                            "label": "Cadrage",
+                            "type": "group",
+                            "divider": true,
+                            "fields": [
+                                "image_pad",
+                                "image_pad_value",
+                                "image_fit",
+                                "image_pos",
+                                "image_radius",
+                                "image_ratio",
+                                "image_height",
+                                "image_hover"
+                            ]
+                        },
+                        {
+                            "label": "Responsive",
+                            "type": "group",
+                            "divider": true,
+                            "fields": [
+                                "stack_at",
+                                "stack_order",
+                                "image_height_mobile",
+                                "hide_image_mobile",
+                                "align_mobile"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "title": "Paramètres",
+                    "fields": [
+                        {
+                            "label": "Général",
+                            "type": "group",
+                            "divider": true,
+                            "fields": [
+                                "position",
+                                "maxwidth",
+                                "margin",
+                                "blend",
+                                "animation",
+                                "visibility"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "title": "Avancé",
+                    "fields": [
+                        "name",
+                        "status",
+                        "source",
+                        "id",
+                        "class",
+                        "attributes",
+                        "css",
+                        "transform"
+                    ]
+                }
+            ]
+        }
+    }
+}

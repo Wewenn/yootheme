@@ -1,0 +1,300 @@
+{
+    "name": "wf_restaurant_reservation",
+    "title": "Réservation de table",
+    "group": "WeFrame · Restaurant",
+    "icon": "${url:images/ic30.svg}",
+    "iconSmall": "${url:images/ic30.svg}",
+    "element": true,
+    "width": 520,
+    "defaults": {
+        "title": "Réserver une table",
+        "intro": "Laissez-nous vos coordonnées, nous vous recontactons pour confirmer.",
+        "button_label": "Envoyer la demande",
+        "date_mode": "strip",
+        "layout": "compact",
+        "accent": "#c0272d",
+        "field_bg": "#ffffff",
+        "field_border": "#d5d5d5",
+        "field_text": "#111111",
+        "label_color": "#333333",
+        "button_text": "#ffffff",
+        "radius": 10,
+        "day_bg": "#f4f4f5",
+        "day_text": "#111111",
+        "slot_bg": "#ffffff",
+        "slot_border": "#d5d5d5",
+        "slot_text": "#111111",
+        "slot_radius": 100,
+        "title_style": "",
+        "show_email": false,
+        "show_note": true,
+        "max_party": 20
+    },
+    "templates": {
+        "render": "./template.php"
+    },
+    "fields": {
+        "title": {
+            "label": "Titre",
+            "type": "text",
+            "source": true
+        },
+        "intro": {
+            "label": "Texte d'intro",
+            "type": "textarea",
+            "source": true
+        },
+        "button_label": {
+            "label": "Texte du bouton",
+            "type": "text",
+            "source": true
+        },
+        "date_mode": {
+            "label": "Choix de la date",
+            "type": "select",
+            "options": {
+                "Ruban de jours": "strip",
+                "Calendrier": "calendar"
+            }
+        },
+        "layout": {
+            "label": "Disposition",
+            "type": "select",
+            "options": {
+                "Formulaire compact (une colonne)": "compact",
+                "Deux colonnes : calendrier | cr\u00e9neaux": "split"
+            },
+            "description": "\u00ab Deux colonnes \u00bb \u00e9largit l'\u00e9l\u00e9ment \u00e0 880 px et pose le calendrier face aux cr\u00e9neaux, comme un \u00e9cran de prise de rendez-vous. Demande le mode Calendrier ci-dessus.",
+            "enable": "date_mode === 'calendar'"
+        },
+        "show_email": {
+            "label": "Champ e-mail",
+            "type": "checkbox",
+            "text": "Demander l'e-mail du client"
+        },
+        "show_note": {
+            "label": "Champ note",
+            "type": "checkbox",
+            "text": "Champ « précision » (allergies, occasion…)"
+        },
+        "max_party": {
+            "label": "Nombre de personnes max",
+            "type": "number",
+            "attrs": {
+                "min": 1,
+                "max": 50
+            }
+        },
+        "accent": {
+            "label": "Couleur accent (boutons, jour sélectionné)",
+            "type": "color"
+        },
+        "field_bg": {
+            "label": "Fond des champs",
+            "type": "color"
+        },
+        "field_border": {
+            "label": "Bordure des champs",
+            "type": "color"
+        },
+        "field_text": {
+            "label": "Texte des champs",
+            "type": "color"
+        },
+        "label_color": {
+            "label": "Couleur des libellés",
+            "type": "color"
+        },
+        "button_text": {
+            "label": "Texte du bouton",
+            "type": "color"
+        },
+        "radius": {
+            "label": "Arrondi (px)",
+            "type": "number",
+            "attrs": {
+                "min": 0,
+                "max": 30,
+                "step": 1
+            }
+        },
+        "day_bg": {
+            "label": "Fond des jours (dispo)",
+            "type": "color"
+        },
+        "day_text": {
+            "label": "Texte des jours",
+            "type": "color"
+        },
+        "slot_bg": {
+            "label": "Fond des créneaux",
+            "type": "color"
+        },
+        "slot_border": {
+            "label": "Bordure des créneaux",
+            "type": "color"
+        },
+        "slot_text": {
+            "label": "Texte des créneaux",
+            "type": "color"
+        },
+        "slot_radius": {
+            "label": "Arrondi des créneaux (px)",
+            "type": "number",
+            "attrs": {
+                "min": 0,
+                "max": 100,
+                "step": 1
+            },
+            "description": "100 = pastille arrondie, 0 = carré."
+        },
+        "title_style": {
+            "label": "Style du titre",
+            "type": "select",
+            "options": {
+                "Par défaut": "",
+                "Primaire": "uk-heading-primary",
+                "Secondaire": "uk-heading-secondary",
+                "Hero": "uk-heading-hero",
+                "Compact (H4)": "uk-h4"
+            },
+            "description": "Typographie du titre, comme les éléments YOOtheme (primaire / secondaire)."
+        },
+        "position": "${builder.position}",
+        "blend": "${builder.blend}",
+        "animation": "${builder.animation}",
+        "visibility": "${builder.visibility}",
+        "name": "${builder.name}",
+        "status": "${builder.status}",
+        "source": "${builder.source}",
+        "id": "${builder.id}",
+        "transform": "${builder.transform}",
+        "class": {
+            "label": "Classes",
+            "type": "text",
+            "source": true,
+            "description": "Un ou plusieurs noms de classe pour l'element (separes par des espaces)."
+        },
+        "css": {
+            "label": "CSS",
+            "type": "editor",
+            "mode": "css",
+            "source": true,
+            "attrs": {
+                "debounce": 500
+            },
+            "description": "Styles CSS personnalises pour cet element."
+        },
+        "attributes": {
+            "label": "Attributs",
+            "type": "editor",
+            "source": true,
+            "attrs": {
+                "debounce": 500
+            },
+            "description": "Un attribut par ligne, au format nom=valeur."
+        },
+        "margin": "${builder.margin}",
+        "maxwidth": "${builder.maxwidth}"
+    },
+    "fieldset": {
+        "default": {
+            "type": "tabs",
+            "fields": [
+                {
+                    "title": "Contenu",
+                    "fields": [
+                        {
+                            "label": "Textes",
+                            "type": "group",
+                            "divider": true,
+                            "fields": [
+                                "title",
+                                "intro",
+                                "button_label"
+                            ]
+                        },
+                        {
+                            "label": "Champs",
+                            "type": "group",
+                            "divider": true,
+                            "fields": [
+                                "date_mode",
+                                "layout",
+                                "show_email",
+                                "show_note",
+                                "max_party"
+                            ]
+                        },
+                        {
+                            "label": "Design du formulaire",
+                            "type": "group",
+                            "divider": true,
+                            "fields": [
+                                "accent",
+                                "field_bg",
+                                "field_border",
+                                "field_text",
+                                "label_color",
+                                "button_text",
+                                "radius"
+                            ]
+                        },
+                        {
+                            "label": "Calendrier & créneaux",
+                            "type": "group",
+                            "divider": true,
+                            "fields": [
+                                "day_bg",
+                                "day_text",
+                                "slot_bg",
+                                "slot_border",
+                                "slot_text",
+                                "slot_radius"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "title": "Paramètres",
+                    "fields": [
+                        {
+                            "label": "Texte",
+                            "type": "group",
+                            "divider": true,
+                            "fields": [
+                                "title_style"
+                            ]
+                        },
+                        {
+                            "label": "Général",
+                            "type": "group",
+                            "divider": true,
+                            "fields": [
+                                "position",
+                                "maxwidth",
+                                "margin",
+                                "blend",
+                                "animation",
+                                "visibility"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "title": "Avancé",
+                    "fields": [
+                        "name",
+                        "status",
+                        "source",
+                        "id",
+                        "class",
+                        "attributes",
+                        "css",
+                        "transform"
+                    ]
+                }
+            ]
+        }
+    }
+}

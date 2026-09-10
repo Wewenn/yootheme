@@ -1,0 +1,253 @@
+{
+    "name": "wf_restaurant_menu",
+    "title": "Menu Restaurant",
+    "group": "WeFrame · Restaurant",
+    "icon": "${url:images/ic30.svg}",
+    "element": true,
+    "container": true,
+    "width": 560,
+    "defaults": {
+        "data_source": "inline",
+        "columns": "1",
+        "layout": "list",
+        "currency": "€",
+        "currency_pos": "after",
+        "show_images": false,
+        "leader": true,
+        "accent": "#c0272d",
+        "name_color": "#111111",
+        "price_color": "#111111",
+        "desc_color": "#6b7280"
+    },
+    "placeholder": {
+        "children": [
+            {
+                "type": "wf_restaurant_menu_item",
+                "props": {
+                    "name": "Fish & Chips",
+                    "description": "Cabillaud pané maison, frites fraîches, sauce tartare.",
+                    "price": "14,90",
+                    "is_popular": true
+                }
+            },
+            {
+                "type": "wf_restaurant_menu_item",
+                "props": {
+                    "name": "Calamars frits",
+                    "description": "Anneaux de calamars, citron, aïoli.",
+                    "price": "12,50"
+                }
+            },
+            {
+                "type": "wf_restaurant_menu_item",
+                "props": {
+                    "name": "Salade veggie",
+                    "description": "Légumes de saison, vinaigrette maison.",
+                    "price": "10,00",
+                    "is_veg": true,
+                    "is_gf": true
+                }
+            }
+        ]
+    },
+    "templates": {
+        "render": "./template.php"
+    },
+    "fields": {
+        "data_source": {
+            "label": "Source des plats",
+            "type": "select",
+            "options": {
+                "Cet élément (plats fixes)": "inline",
+                "Réglages du restaurant (pilotable au téléphone)": "central"
+            },
+            "description": "« Réglages du restaurant » : la liste des plats se gère depuis WeFrame → Menu (plat du jour, épuisé, prix). Les plats saisis ci-dessous sont alors ignorés."
+        },
+        "items": {
+            "label": "Plats",
+            "type": "content-items",
+            "item": "wf_restaurant_menu_item",
+            "title": "name"
+        },
+        "columns": {
+            "label": "Colonnes",
+            "type": "select",
+            "options": {
+                "1": "1",
+                "2": "2"
+            }
+        },
+        "layout": {
+            "label": "Style",
+            "type": "select",
+            "options": {
+                "Liste (prix aligné)": "list",
+                "Cartes": "cards"
+            }
+        },
+        "currency": {
+            "label": "Devise",
+            "type": "text",
+            "source": true
+        },
+        "currency_pos": {
+            "label": "Position devise",
+            "type": "select",
+            "options": {
+                "Après (12,90 €)": "after",
+                "Avant (€ 12,90)": "before"
+            }
+        },
+        "show_images": {
+            "label": "Photos des plats",
+            "type": "checkbox",
+            "text": "Afficher"
+        },
+        "leader": {
+            "label": "Ligne pointillée",
+            "type": "checkbox",
+            "text": "Entre le nom et le prix (style liste)"
+        },
+        "accent": {
+            "label": "Couleur accent (badges/prix)",
+            "type": "color"
+        },
+        "name_color": {
+            "label": "Couleur nom",
+            "type": "color"
+        },
+        "price_color": {
+            "label": "Couleur prix",
+            "type": "color"
+        },
+        "desc_color": {
+            "label": "Couleur description",
+            "type": "color"
+        },
+        "animation": "${builder.animation}",
+        "visibility": "${builder.visibility}",
+        "position": "${builder.position}",
+        "blend": "${builder.blend}",
+        "name": "${builder.name}",
+        "status": "${builder.status}",
+        "source": "${builder.source}",
+        "id": "${builder.id}",
+        "transform": "${builder.transform}",
+        "class": {
+            "label": "Classes",
+            "type": "text",
+            "source": true,
+            "description": "Un ou plusieurs noms de classe pour l'element (separes par des espaces)."
+        },
+        "css": {
+            "label": "CSS",
+            "type": "editor",
+            "mode": "css",
+            "source": true,
+            "attrs": {
+                "debounce": 500
+            },
+            "description": "Styles CSS personnalises pour cet element."
+        },
+        "attributes": {
+            "label": "Attributs",
+            "type": "editor",
+            "source": true,
+            "attrs": {
+                "debounce": 500
+            },
+            "description": "Un attribut par ligne, au format nom=valeur."
+        },
+        "margin": "${builder.margin}",
+        "maxwidth": "${builder.maxwidth}"
+    },
+    "fieldset": {
+        "default": {
+            "type": "tabs",
+            "fields": [
+                {
+                    "title": "Contenu",
+                    "fields": [
+                        {
+                            "label": "Source",
+                            "type": "group",
+                            "divider": true,
+                            "fields": [
+                                "data_source"
+                            ]
+                        },
+                        "items"
+                    ]
+                },
+                {
+                    "title": "Style",
+                    "fields": [
+                        {
+                            "label": "Disposition",
+                            "type": "group",
+                            "divider": true,
+                            "fields": [
+                                "columns",
+                                "layout",
+                                "show_images",
+                                "leader"
+                            ]
+                        },
+                        {
+                            "label": "Prix",
+                            "type": "group",
+                            "divider": true,
+                            "fields": [
+                                "currency",
+                                "currency_pos"
+                            ]
+                        },
+                        {
+                            "label": "Couleurs",
+                            "type": "group",
+                            "divider": true,
+                            "fields": [
+                                "accent",
+                                "name_color",
+                                "price_color",
+                                "desc_color"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "title": "Paramètres",
+                    "fields": [
+                        {
+                            "label": "Général",
+                            "type": "group",
+                            "divider": true,
+                            "fields": [
+                                "position",
+                                "maxwidth",
+                                "margin",
+                                "blend",
+                                "animation",
+                                "visibility"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "title": "Avancé",
+                    "fields": [
+                        "name",
+                        "status",
+                        "source",
+                        "id",
+                        "class",
+                        "attributes",
+                        "css",
+                        "transform"
+                    ]
+                }
+            ]
+        }
+    },
+    "iconSmall": "${url:images/ic30.svg}"
+}
