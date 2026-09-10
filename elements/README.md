@@ -13,17 +13,23 @@ collections saisies avec le champ natif « Articles » (`content-items`).
 
 ## ZIP prêt à installer
 
-`dist/wf-yoo-elements-sans-wc-6.30.0.zip` — le plugin complet, variante **sans
+`dist/wf-yoo-elements-sans-wc-6.31.0.zip` — le plugin complet, variante **sans
 WooCommerce**, avec :
 
 - les trois éléments ci-dessus ;
 - le correctif `container: true` ([CORRECTIF-container-true.md](CORRECTIF-container-true.md)) ;
 - le **défilement latéral dans les réglages de Section**
-  ([DEFILEMENT-LATERAL.md](DEFILEMENT-LATERAL.md)), module câblé et keyframes
-  déjà ajoutées au CSS partagé.
+  ([DEFILEMENT-LATERAL.md](DEFILEMENT-LATERAL.md)), module câblé — v2, moteur
+  piloté par script.
 
 199 éléments, 1010 fichiers ; par rapport au ZIP 6.28.0, 16 fichiers ajoutés,
 7 modifiés, aucun supprimé.
+
+Le 6.30.0 a été **supprimé** : il portait la v1 du défilement latéral, celle qui
+ne marchait pas. Par rapport à lui, le 6.31.0 ne change que trois fichiers —
+`modules/wf-section-scroll.php` (réécrit), `assets/css/weframe-shared.css`
+(keyframes `wf-hs-x` et `wf-hs-bar` retirées, la v2 n'anime plus rien en CSS) et
+l'en-tête de version.
 
 La variante complète (avec WooCommerce) n'a pas pu être régénérée : ses sources
 n'ont pas été fournies. À rebâtir depuis `_sources` une fois les deux
@@ -46,7 +52,7 @@ puis de rebâtir les ZIP :
 
 ```powershell
 cd "C:\Users\Ewen\Documents\Claude\We Frame\_build_suite"
-python build_elements.py 6.30.0
+python build_elements.py 6.31.0
 ```
 
 `bootstrap.php` charge les éléments avec `./element/*/element.json` : rien à
@@ -57,9 +63,10 @@ le travail que le ZIP livré contient :
 
 - le correctif `container: true` — quatre lignes, voir
   [CORRECTIF-container-true.md](CORRECTIF-container-true.md) ;
-- le module `modules/wf-section-scroll.php`, ses deux lignes dans
-  `bootstrap.php` et ses deux keyframes dans `assets/css/weframe-shared.css` —
-  voir [DEFILEMENT-LATERAL.md](DEFILEMENT-LATERAL.md).
+- le module `modules/wf-section-scroll.php` et ses deux ajouts dans
+  `bootstrap.php` — voir [DEFILEMENT-LATERAL.md](DEFILEMENT-LATERAL.md). Rien à
+  ajouter dans `assets/css/weframe-shared.css` : si les keyframes `wf-hs-x` et
+  `wf-hs-bar` de la v1 y ont été recopiées, il faut au contraire les retirer.
 
 ---
 

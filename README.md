@@ -56,7 +56,7 @@ yootheme/
 │               └── before-after.js
 │
 ├── dist/                           # ZIP installables
-│   ├── wf-yoo-elements-sans-wc-6.30.0.zip
+│   ├── wf-yoo-elements-sans-wc-6.31.0.zip
 │   └── wf-restaurant-1.17.0.zip
 │
 ├── plugins/                        # Sources de plugins corrigées
@@ -68,8 +68,7 @@ yootheme/
 │   ├── CORRECTIF-container-true.md # Correctif à reporter dans _sources
 │   ├── DEFILEMENT-LATERAL.md       # Défilement latéral de section : approche + install
 │   └── modules/
-│       ├── wf-section-scroll.php   # Champs ajoutés à la Section native
-│       ├── wf-section-scroll.keyframes.css
+│       ├── wf-section-scroll.php   # Défilement latéral ajouté à la Section native
 │       └── element/
 │           ├── panel-pp/           # Panneau ++ (fond image, sous-mise en page, responsive)
 │           ├── perspective-slider/ # Carrousel perspective infini
