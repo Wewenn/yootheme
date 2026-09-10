@@ -56,6 +56,7 @@ yootheme/
 │               └── before-after.js
 │
 ├── dist/                           # ZIP installables
+│   ├── wf-yoo-elements-sans-wc-6.44.1.zip
 │   ├── wf-yoo-elements-sans-wc-6.31.0.zip
 │   └── wf-restaurant-1.17.0.zip
 │
@@ -67,6 +68,9 @@ yootheme/
 │   ├── README.md                   # Installation + description des réglages
 │   ├── CORRECTIF-container-true.md # Correctif à reporter dans _sources
 │   ├── DEFILEMENT-LATERAL.md       # Défilement latéral de section : approche + install
+│   ├── REVUE-6.44.md               # Revue du build 6.44.0 + correctifs 6.44.1
+│   ├── tools/
+│   │   └── audit-elements.py       # Balayage des element.json (à passer dans _devtest)
 │   └── modules/
 │       ├── wf-section-scroll.php   # Défilement latéral ajouté à la Section native
 │       └── element/
