@@ -56,7 +56,7 @@ yootheme/
 │               └── before-after.js
 │
 ├── dist/                           # ZIP installables
-│   ├── wf-yoo-elements-sans-wc-6.47.0.zip   # <- le courant
+│   ├── wf-yoo-elements-sans-wc-6.48.0.zip   # <- le courant
 │   ├── wf-yoo-elements-sans-wc-6.44.1.zip
 │   ├── wf-yoo-elements-sans-wc-6.31.0.zip
 │   └── wf-restaurant-1.17.0.zip
@@ -71,6 +71,7 @@ yootheme/
 │   ├── DEFILEMENT-LATERAL.md       # Défilement latéral d'UNE section : approche + install
 │   ├── SECTIONS-COTE-A-COTE.md     # Plusieurs sections par ligne : approche + install
 │   ├── INDEX-BUILDER.md            # Panneau « Éléments WeFrame » dans le builder
+│   ├── ANNUAIRE-GLOBAL.md          # Entrée « WeFrame » au menu : Dialog, Navbar, inventaire
 │   ├── REVUE-6.44.md               # Revue du build 6.44.0 + correctifs 6.44.1
 │   ├── tools/
 │   │   └── audit-elements.py       # Balayage des element.json (à passer dans _devtest)
@@ -78,6 +79,7 @@ yootheme/
 │       ├── wf-section-scroll.php   # Défilement latéral d'une section
 │       ├── wf-section-ribbon.php   # Sections côte à côte (lignes de gauche à droite)
 │       ├── wf-builder-index.php    # Panneau contextuel des éléments WeFrame
+│       ├── wf-global-index.php     # Annuaire global (menu du customizer)
 │       └── element/
 │           ├── panel-pp/           # Panneau ++ (fond image, sous-mise en page, responsive)
 │           ├── perspective-slider/ # Carrousel perspective infini
