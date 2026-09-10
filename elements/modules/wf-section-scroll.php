@@ -185,6 +185,11 @@ function wf_shs_css( array $p ) {
 	$mode = (string) ( $p['wf_hs'] ?? '' );
 	if ( 'strip' !== $mode && 'pin' !== $mode ) { return ''; }
 
+	// Une section prise dans un parcours en escalier est déjà posée sur un
+	// plateau par wf-section-ribbon.php : elle ne peut pas en plus s'épingler
+	// pour elle-même. Le parcours l'emporte, sans discussion possible.
+	if ( ! empty( $p['wf_rb'] ) ) { return ''; }
+
 	$dir   = ( 'right' === ( $p['wf_hs_dir'] ?? 'left' ) ) ? 'right' : 'left';
 	$width = (string) ( $p['wf_hs_width'] ?? '100' );
 	if ( ! in_array( $width, array( '100', '75', '66', '50', '33', 'auto' ), true ) ) { $width = '100'; }

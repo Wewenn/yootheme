@@ -11,29 +11,27 @@ collections saisies avec le champ natif « Articles » (`content-items`).
 | `perspective-slider/` | `wf_persp_slider` | Carrousel perspective infini | WeFrame · Scroll & Images |
 | `perspective-slider-item/` | `wf_persp_slider_item` | Image (carrousel perspective) | WeFrame · Scroll & Images |
 
-## ZIP prêt à installer
+## ZIP prêts à installer
 
-`dist/wf-yoo-elements-sans-wc-6.31.0.zip` — le plugin complet, variante **sans
-WooCommerce**, avec :
+**`dist/wf-yoo-elements-sans-wc-6.45.0.zip` — c'est celui à poser.** Construit
+sur le build 6.44.0 fourni le 10/09, avec ses 236 définitions intactes.
 
-- les trois éléments ci-dessus ;
-- le correctif `container: true` ([CORRECTIF-container-true.md](CORRECTIF-container-true.md)) ;
-- le **défilement latéral dans les réglages de Section**
-  ([DEFILEMENT-LATERAL.md](DEFILEMENT-LATERAL.md)), module câblé — v2, moteur
-  piloté par script.
+| Version | Ce qu'elle apporte | Base |
+|---|---|---|
+| **6.45.0** | les deux modules de défilement de Section : [parcours en escalier](PARCOURS-ESCALIER.md) et [défilement latéral](DEFILEMENT-LATERAL.md) | 6.44.1 |
+| 6.44.1 | les quatre correctifs de la [revue](REVUE-6.44.md), dont la fatale PHP 8 d'`agenda-pro` | 6.44.0 |
+| 6.31.0 | Panneau ++, carrousel perspective, correctif `container: true` | 6.28.0 |
 
-199 éléments, 1010 fichiers ; par rapport au ZIP 6.28.0, 16 fichiers ajoutés,
-7 modifiés, aucun supprimé.
+Le 6.45.0 ne change que cinq fichiers par rapport au 6.44.1 : les deux modules,
+leur câblage dans `bootstrap.php`, l'en-tête de version et les notes.
 
-Le 6.30.0 a été **supprimé** : il portait la v1 du défilement latéral, celle qui
-ne marchait pas. Par rapport à lui, le 6.31.0 ne change que trois fichiers —
-`modules/wf-section-scroll.php` (réécrit), `assets/css/weframe-shared.css`
-(keyframes `wf-hs-x` et `wf-hs-bar` retirées, la v2 n'anime plus rien en CSS) et
-l'en-tête de version.
+**Le 6.31.0 est conservé** parce qu'il est le seul à contenir le **carrousel
+perspective infini** : le build 6.44 du 10/09 ne l'a plus (voir
+[REVUE-6.44.md](REVUE-6.44.md), « dix définitions disparues »). Sa base est en
+revanche seize versions en arrière — n'installe pas les deux.
 
-La variante complète (avec WooCommerce) n'a pas pu être régénérée : ses sources
-n'ont pas été fournies. À rebâtir depuis `_sources` une fois les deux
-changements reportés.
+La variante complète (avec WooCommerce) n'a jamais pu être régénérée : ses
+sources n'ont pas été fournies.
 
 **Vider le cache YOOtheme après l'installation.**
 
@@ -52,7 +50,7 @@ puis de rebâtir les ZIP :
 
 ```powershell
 cd "C:\Users\Ewen\Documents\Claude\We Frame\_build_suite"
-python build_elements.py 6.31.0
+python build_elements.py 6.45.0
 ```
 
 `bootstrap.php` charge les éléments avec `./element/*/element.json` : rien à
@@ -63,10 +61,12 @@ le travail que le ZIP livré contient :
 
 - le correctif `container: true` — quatre lignes, voir
   [CORRECTIF-container-true.md](CORRECTIF-container-true.md) ;
-- le module `modules/wf-section-scroll.php` et ses deux ajouts dans
-  `bootstrap.php` — voir [DEFILEMENT-LATERAL.md](DEFILEMENT-LATERAL.md). Rien à
-  ajouter dans `assets/css/weframe-shared.css` : si les keyframes `wf-hs-x` et
-  `wf-hs-bar` de la v1 y ont été recopiées, il faut au contraire les retirer.
+- les modules `modules/wf-section-scroll.php` et
+  `modules/wf-section-ribbon.php`, et leurs ajouts dans `bootstrap.php` — voir
+  [DEFILEMENT-LATERAL.md](DEFILEMENT-LATERAL.md) et
+  [PARCOURS-ESCALIER.md](PARCOURS-ESCALIER.md). Rien à ajouter dans `assets/` :
+  si les keyframes `wf-hs-x` et `wf-hs-bar` de la v1 du défilement latéral y ont
+  été recopiées, il faut au contraire les retirer.
 
 ---
 
