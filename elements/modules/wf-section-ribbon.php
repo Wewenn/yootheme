@@ -1,57 +1,62 @@
 <?php
 /**
- * WeFrame – Parcours en escalier (ruban de sections)
+ * WeFrame – Parcours en lignes (sections côte à côte)
  *
- * Ajoute un second groupe de champs à la Section native : au lieu de descendre,
- * la page enchaîne les sections sur un plateau à deux dimensions, et le
- * défilement y promène une caméra.
+ * Ajoute un groupe de champs à la Section native : au lieu de descendre, la page
+ * enchaîne plusieurs sections côte à côte sur une même ligne, et le défilement
+ * les fait défiler de gauche à droite. Quand la ligne est finie, la page reprend
+ * son cours vers le bas jusqu'à la ligne suivante.
  *
- * ── Ce que ça fait, en une image ──────────────────────────────────────────
+ * ── Ce que ça fait ───────────────────────────────────────────────────────
  *
- *     S1 → S2 ┐          « À droite » : la section se pose à droite
- *             ↓
- *            S3          « En dessous » : elle descend, SANS revenir à gauche
- *             ↓
- *            S4 → S5 → S6
+ *     S1 → S2            ligne 1 : on part de la GAUCHE, on va vers la droite
+ *     ↓ (défilement vertical normal)
+ *     S3                 ligne 2 : une seule section, rien de spécial
+ *     ↓ (défilement vertical normal)
+ *     S4 → S5 → S6       ligne 3 : de la GAUCHE vers la droite, à nouveau
  *
- * La descente se fait à la colonne où la ligne s'arrête. C'est un escalier qui
- * descend vers la droite, pas un serpent qui fait des allers-retours.
+ * ── Pourquoi ce n'est plus un plateau à deux dimensions ──────────────────
+ *
+ * La première version posait toutes les sections sur un seul plateau et y
+ * promenait une caméra : la ligne suivante démarrait à la colonne où la
+ * précédente s'était arrêtée, en escalier. Résultat à l'écran : les lignes ne
+ * commençaient pas au même endroit, et la descente entre deux lignes était un
+ * mouvement de caméra vers le bas au milieu du plateau.
+ *
+ * Ici chaque ligne est un bloc indépendant : elle s'épingle le temps de sa
+ * traversée, puis relâche. Entre deux lignes, il n'y a pas de mouvement
+ * particulier à inventer — c'est le défilement vertical ordinaire de la page.
+ *
+ * Trois gains : chaque ligne commence à gauche et finit à droite ; il n'y a
+ * plus de trajet diagonal ni de retour chariot à mettre en scène ; et une ligne
+ * d'une seule section n'est rien d'autre qu'une section normale.
  *
  * ── Ce que ce n'est pas ──────────────────────────────────────────────────
  *
  * Ce n'est pas wf-section-scroll.php. Celui-là fait défiler l'INTÉRIEUR d'une
  * section : ses colonnes deviennent des panneaux, et rien ne sort de la
- * section. Ici ce sont des sections ENTIÈRES qu'on pose côte à côte.
+ * section. Ici ce sont des sections ENTIÈRES qu'on met côte à côte.
  *
- * Une section YOOtheme ne peut pas en contenir une autre : le plateau ne peut
+ * Une section YOOtheme ne peut pas en contenir une autre : la ligne ne peut
  * donc pas être un élément du builder. C'est le script qui, à l'exécution,
- * repère les sections voisines qui se déclarent d'un même parcours, fabrique le
- * plateau autour d'elles et les y place. D'où le réglage : il ne dit pas
- * « cette section défile », il dit « cette section se pose là ».
+ * repère les sections voisines déclarées d'une même ligne, fabrique le cadre
+ * autour d'elles et les y place. D'où le réglage : il ne dit pas « cette
+ * section défile », il dit « cette section se pose là ».
  *
  * ── Le défilement n'est jamais détourné ──────────────────────────────────
  *
- * Comme pour le défilement latéral : on ne touche ni à la molette, ni à
- * scrollTop. Le parcours devient une zone verticale plus haute que l'écran, on
- * y colle un hublot, et la position de la caméra sur le plateau se déduit de la
- * progression de cette zone. Le clavier, l'inertie du trackpad, la barre de
- * défilement et le geste tactile restent ceux du navigateur.
+ * Ni molette interceptée, ni scrollTop écrit à la main. Une ligne devient une
+ * zone verticale plus haute que l'écran, on y colle un hublot, et le décalage
+ * horizontal se déduit de la progression de cette zone. Le clavier, l'inertie
+ * du trackpad, la barre de défilement et le geste tactile restent ceux du
+ * navigateur.
  *
  * ── Sans script, la page reste la page ───────────────────────────────────
  *
- * Aucune règle CSS n'est posée sur les sections tant que le script n'a pas
- * monté le plateau. Script absent, script en erreur, écran trop étroit,
- * visiteur qui demande moins d'animations : dans les quatre cas les sections
- * restent empilées dans l'ordre, et la page fonctionne. Le repli n'est pas une
- * version dégradée, c'est la page normale.
- *
- * ── Pourquoi le mouvement réduit coupe le parcours ───────────────────────
- *
- * Le mode épinglé de wf-section-scroll reste actif sous prefers-reduced-motion
- * (c'est une mise en page, pas une décoration) mais sans glissement résiduel.
- * Ici c'est différent : une caméra qui se déplace sur deux axes est exactement
- * ce qui déclenche les troubles vestibulaires. Le parcours est donc désactivé
- * pour ces visiteurs, et la page redevient une colonne — complète et lisible.
+ * Aucune règle CSS n'est posée sur les sections tant que le cadre n'est pas
+ * monté. Script absent, écran trop étroit, mouvement réduit demandé : les
+ * sections restent empilées dans l'ordre. Le repli n'est pas une version
+ * dégradée, c'est la page normale.
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -60,23 +65,23 @@ if ( ! function_exists( 'wf_rb_fields' ) ) :
 /**
  * Champs ajoutés à la Section.
  *
- * Les réglages du parcours (longueur, souplesse, seuil, barre) vivent sur la
- * section qui le démarre : un parcours, un jeu de réglages.
+ * Les réglages du parcours vivent sur la section qui le démarre : un parcours,
+ * un jeu de réglages, quel que soit son nombre de lignes.
  *
  * @return array<string, array<string, mixed>>
  */
 function wf_rb_fields() {
 	return array(
 		'wf_rb' => array(
-			'label'   => 'Parcours en escalier',
+			'label'   => 'Sections côte à côte',
 			'type'    => 'select',
 			'options' => array(
-				'Non'                          => '',
-				'Démarre le parcours'          => 'start',
-				'À droite de la précédente'    => 'right',
-				'En dessous de la précédente'  => 'down',
+				'Non'                                => '',
+				'Démarre la première ligne'          => 'start',
+				'À droite de la précédente'          => 'right',
+				'Nouvelle ligne (retour à gauche)'   => 'down',
 			),
-			'description' => "Les sections d'un même parcours doivent se suivre immédiatement dans la page. La première le démarre, les suivantes disent où elles se posent.",
+			'description' => "Les sections d'un même parcours doivent se suivre immédiatement dans la page. Chaque ligne part de la gauche et défile vers la droite ; entre deux lignes, la page descend normalement.",
 		),
 		'wf_rb_w' => array(
 			'label'   => 'Largeur de cette section',
@@ -89,15 +94,15 @@ function wf_rb_fields() {
 				'Selon le contenu' => 'auto',
 			),
 			'enable'  => 'wf_rb',
-			'description' => "La hauteur est toujours d'un écran : c'est elle qui aligne les lignes du parcours.",
+			'description' => "Si toute la ligne tient dans l'écran, elle ne défile pas : les sections sont simplement posées côte à côte.",
 		),
 		'wf_rb_len' => array(
-			'label'  => 'Longueur du parcours (%)',
+			'label'  => 'Longueur de la traversée (%)',
 			'type'   => 'number',
 			'attrs'  => array( 'min' => 50, 'max' => 400, 'step' => 10 ),
 			'source' => true,
 			'enable' => "wf_rb === 'start'",
-			'description' => "100 = un pixel de défilement pour un pixel parcouru sur le plateau. Plus haut, la caméra avance plus lentement.",
+			'description' => "100 = un pixel de défilement vertical pour un pixel parcouru vers la droite. Plus haut, la traversée est plus lente.",
 		),
 		'wf_rb_ease' => array(
 			'label'  => 'Souplesse du mouvement',
@@ -105,7 +110,7 @@ function wf_rb_fields() {
 			'attrs'  => array( 'min' => 0, 'max' => 100, 'step' => 5 ),
 			'source' => true,
 			'enable' => "wf_rb === 'start'",
-			'description' => "0 : la caméra suit le défilement au pixel. 100 : elle glisse encore un instant après l'arrêt.",
+			'description' => "0 : la ligne suit le défilement au pixel. 100 : elle glisse encore un instant après l'arrêt.",
 		),
 		'wf_rb_from' => array(
 			'label'   => 'À partir de',
@@ -121,7 +126,7 @@ function wf_rb_fields() {
 		'wf_rb_bar' => array(
 			'label'  => 'Progression',
 			'type'   => 'checkbox',
-			'text'   => 'Afficher une barre de progression',
+			'text'   => 'Afficher une barre de progression sur chaque ligne',
 			'enable' => "wf_rb === 'start'",
 		),
 		'wf_rb_bar_color' => array(
@@ -153,7 +158,7 @@ if ( ! function_exists( 'wf_rb_css' ) ) :
  * relit avec getComputedStyle, et une section sans script reste propre.
  *
  * Aucune règle de mise en page ici — tout ce qui positionne est posé par le
- * script, et seulement quand le plateau est monté.
+ * script, et seulement quand le cadre est monté.
  *
  * @param array $p Props du nœud.
  * @return string
@@ -195,14 +200,14 @@ function wf_rb_script() {
 	ob_start();
 	?>
 <style>
-/* Structure du plateau. Rien de tout cela n'existe avant que le script ne
-   monte le parcours : ces classes sont posées par lui. */
+/* Structure d'une ligne. Rien de tout cela n'existe avant que le script ne la
+   monte : ces classes sont posées par lui. */
 .wf-rb-stage{position:relative;}
 .wf-rb-view{position:sticky;top:0;height:100vh;overflow:hidden;}
 .wf-rb-board{position:relative;will-change:transform;}
 /* !important sur la marge : une section peut porter la sienne via le champ
    « Marge », et la marge d'un élément absolu décale sa position. */
-.wf-rb-cell{position:absolute;margin:0 !important;box-sizing:border-box;}
+.wf-rb-cell{position:absolute;top:0;margin:0 !important;box-sizing:border-box;}
 .wf-rb-stage[data-bar] .wf-rb-view::after{
 	content:"";position:absolute;top:0;left:0;right:0;height:3px;z-index:2;
 	background:var(--wf-rb-bar,currentColor);pointer-events:none;
@@ -222,7 +227,7 @@ function wf_rb_script() {
 	}
 	function crier(sec, raison){
 		if (window.console) {
-			console.warn('WF parcours en escalier : ' + raison, sec);
+			console.warn('WF sections côte à côte : ' + raison, sec);
 		}
 	}
 
@@ -250,8 +255,8 @@ function wf_rb_script() {
 	/**
 	 * Rassemble les sections voisines en parcours. Un parcours = une section
 	 * « Démarre », suivie immédiatement de sections « à droite » ou
-	 * « en dessous ». « Immédiatement » est vérifié, pas supposé : une section
-	 * ordinaire glissée au milieu casserait le plateau en silence.
+	 * « nouvelle ligne ». Le voisinage est vérifié, pas supposé : une section
+	 * ordinaire glissée au milieu casserait la mise en page en silence.
 	 */
 	function grouper(){
 		var secs = document.querySelectorAll('.wf-rb');
@@ -265,7 +270,7 @@ function wf_rb_script() {
 				continue;
 			}
 			if (!courant) {
-				crier(sec, 'aucune section « Démarre le parcours » avant celle-ci');
+				crier(sec, 'aucune section « Démarre la première ligne » avant celle-ci');
 				continue;
 			}
 			var dernier = courant.cases[courant.cases.length - 1];
@@ -280,25 +285,41 @@ function wf_rb_script() {
 		return groupes;
 	}
 
-	function activer(g){
-		var cases = g.cases, roles = g.roles, n = cases.length;
-		var tete = cases[0];
-		var cs = getComputedStyle(tete);
-		var len     = nombre(cs, '--wf-rb-len', 100) / 100;
-		var douceur = nombre(cs, '--wf-rb-ease', 70);
-		var seuil   = nombre(cs, '--wf-rb-bp', 960);
-		var barre   = texte(cs, '--wf-rb-bar');
-		var k = 1 - (douceur / 100) * 0.86;
+	/**
+	 * Découpe un parcours en lignes. Chaque « nouvelle ligne » ouvre une ligne,
+	 * et c'est tout : les lignes sont indépendantes les unes des autres, ce qui
+	 * est précisément ce qui les fait toutes partir de la gauche.
+	 */
+	function decouper(g){
+		var lignes = [], courante = null;
+		for (var i = 0; i < g.cases.length; i++) {
+			if (0 === i || 'down' === g.roles[i]) {
+				courante = [];
+				lignes.push(courante);
+			}
+			courante.push(g.cases[i]);
+		}
+		return lignes;
+	}
 
-		var parent = tete.parentElement;
-		var ancre  = document.createComment('wf-rb');
-		parent.insertBefore(ancre, tete);
+	/**
+	 * Monte une ligne : les sections passent côte à côte dans un cadre, et le
+	 * défilement vertical de la page les fait glisser vers la gauche.
+	 *
+	 * @param {Element[]} cases Les sections de cette ligne, dans l'ordre.
+	 * @param {Object}    reg   Réglages lus sur la tête du parcours.
+	 */
+	function activerLigne(cases, reg){
+		var n = cases.length;
+		var parent = cases[0].parentElement;
+		var ancre = document.createComment('wf-rb');
+		parent.insertBefore(ancre, cases[0]);
 
 		var stage = null, vue = null, board = null, io = null;
 		var actif = false, visible = true, raf = 0;
-		var larg = [], posX = [], posY = [];
-		var course = 0, hVue = 0;
-		var cx = 0, cy = 0, vx = 0, vy = 0;
+		var larg = [], course = 0, hVue = 0;
+		var cx = 0, vx = 0;
+		var k = reg.k;
 
 		function monter(){
 			stage = document.createElement('div');
@@ -310,16 +331,15 @@ function wf_rb_script() {
 			stage.appendChild(vue);
 			vue.appendChild(board);
 			parent.insertBefore(stage, ancre);
-			if (barre) { stage.setAttribute('data-bar', ''); }
+			if (reg.barre) { stage.setAttribute('data-bar', ''); }
 			for (var i = 0; i < n; i++) {
 				cases[i].classList.add('wf-rb-cell');
 				board.appendChild(cases[i]);
 			}
-
-			// L'observateur suit le plateau lui-même. Première version : il
-			// suivait « ce qui vient après l'ancre », qui se trouve être une
-			// balise <style> — un élément sans boîte, donc jamais visible. La
-			// caméra ne repeignait jamais.
+			// L'observateur suit le cadre lui-même. Première version : il suivait
+			// « ce qui vient après l'ancre », qui se trouve être une balise
+			// <style> — un élément sans boîte, donc jamais visible. La ligne ne
+			// repeignait jamais.
 			if ('IntersectionObserver' in window) {
 				io = new IntersectionObserver(function(e){
 					for (var j = 0; j < e.length; j++) {
@@ -339,7 +359,6 @@ function wf_rb_script() {
 				var c = cases[i];
 				c.classList.remove('wf-rb-cell');
 				c.style.left = '';
-				c.style.top = '';
 				c.style.width = '';
 				c.style.height = '';
 				parent.insertBefore(c, ancre);
@@ -348,7 +367,7 @@ function wf_rb_script() {
 			stage = vue = board = null;
 		}
 
-		/** Largeur naturelle d'une case, bornée : « selon le contenu ». */
+		/** Largeur naturelle d'une section, bornée : « selon le contenu ». */
 		function auto(el, vp){
 			var avant = el.style.width;
 			el.style.width = 'max-content';
@@ -363,50 +382,35 @@ function wf_rb_script() {
 			// Contre la largeur du hublot, pas window.innerWidth : celle-ci
 			// compte la barre de défilement, et le parent peut être borné.
 			var vp = Math.round(vue.getBoundingClientRect().width);
-			var i;
+			var x = 0, i;
 
 			for (i = 0; i < n; i++) {
 				var brut = texte(getComputedStyle(cases[i]), '--wf-rb-w');
 				larg[i] = ('auto' === brut)
 					? auto(cases[i], vp)
 					: Math.round(vp * (parseFloat(brut) || 100) / 100);
-			}
-
-			// Le chemin : à droite on avance de la largeur de la case
-			// précédente, en dessous on descend d'un écran. La colonne ne
-			// change pas quand on descend — c'est tout l'escalier.
-			var x = 0, y = 0;
-			posX[0] = 0; posY[0] = 0;
-			course = 0;
-			for (i = 1; i < n; i++) {
-				if ('down' === roles[i]) { y += hVue; course += hVue; }
-				else { x += larg[i - 1]; course += larg[i - 1]; }
-				posX[i] = x;
-				posY[i] = y;
-			}
-
-			var maxX = 0, maxY = 0;
-			for (i = 0; i < n; i++) {
-				cases[i].style.left = posX[i] + 'px';
-				cases[i].style.top = posY[i] + 'px';
+				cases[i].style.left = x + 'px';
 				cases[i].style.width = larg[i] + 'px';
 				cases[i].style.height = hVue + 'px';
-				if (posX[i] + larg[i] > maxX) { maxX = posX[i] + larg[i]; }
-				if (posY[i] + hVue > maxY) { maxY = posY[i] + hVue; }
+				x += larg[i];
 			}
-			board.style.width = maxX + 'px';
-			board.style.height = maxY + 'px';
+			board.style.width = x + 'px';
+			board.style.height = hVue + 'px';
 
-			stage.style.height = (hVue + Math.round(course * len)) + 'px';
-			cx = 0; cy = 0; vx = 0; vy = 0;
+			// La ligne s'arrête quand son bord droit rejoint celui du hublot.
+			// Si elle tient déjà dans l'écran, il n'y a rien à parcourir : les
+			// sections sont simplement posées côte à côte.
+			course = Math.max(0, x - vp);
+			stage.style.height = (hVue + Math.round(course * reg.len)) + 'px';
+			cx = 0; vx = 0;
 		}
 
 		/**
-		 * Lue en direct sur la position du plateau à l'écran, et pas sur des
+		 * Lue en direct sur la position du cadre à l'écran, et pas sur des
 		 * bornes calculées une fois pour toutes : une image qui arrive en
-		 * retard, une police qui se substitue, un autre parcours qui se monte
-		 * au-dessus — tout cela déplace le plateau, et des bornes gardées en
-		 * mémoire deviennent fausses sans prévenir.
+		 * retard, une police qui se substitue, une ligne qui se monte au-dessus
+		 * — tout cela déplace le cadre, et des bornes gardées en mémoire
+		 * deviennent fausses sans prévenir.
 		 */
 		function progression(){
 			var total = stage.offsetHeight - hVue;
@@ -415,31 +419,13 @@ function wf_rb_script() {
 			return p < 0 ? 0 : (p > 1 ? 1 : p);
 		}
 
-		/** Où est la caméra après avoir parcouru d pixels de chemin. */
-		function camera(d){
-			var x = 0, y = 0;
-			for (var i = 1; i < n; i++) {
-				var pas = ('down' === roles[i]) ? hVue : larg[i - 1];
-				if (d <= pas) {
-					if ('down' === roles[i]) { y += d; } else { x += d; }
-					return [x, y];
-				}
-				d -= pas;
-				if ('down' === roles[i]) { y += pas; } else { x += pas; }
-			}
-			return [x, y];
-		}
-
 		function peindre(){
 			if (!actif) { return; }
 			var p = progression();
-			var c = camera(course * p);
-			vx = c[0]; vy = c[1];
+			vx = course * p;
 			cx += (vx - cx) * k;
-			cy += (vy - cy) * k;
 			if (Math.abs(vx - cx) < 0.15) { cx = vx; }
-			if (Math.abs(vy - cy) < 0.15) { cy = vy; }
-			board.style.transform = 'translate3d(' + (-cx).toFixed(2) + 'px,' + (-cy).toFixed(2) + 'px,0)';
+			board.style.transform = 'translate3d(' + (-cx).toFixed(2) + 'px,0,0)';
 			stage.style.setProperty('--wf-rb-progress', p.toFixed(4));
 		}
 
@@ -447,7 +433,7 @@ function wf_rb_script() {
 			if (!actif) { raf = 0; return; }
 			peindre();
 			if (!visible) { raf = 0; return; }
-			if (cx === vx && cy === vy) { raf = 0; return; }
+			if (cx === vx) { raf = 0; return; }
 			raf = requestAnimationFrame(boucle);
 		}
 		function relancer(){
@@ -455,16 +441,6 @@ function wf_rb_script() {
 			raf = requestAnimationFrame(boucle);
 		}
 
-		var calme = false;
-		if (window.matchMedia) {
-			// Une caméra qui bouge sur deux axes est précisément ce qui rend
-			// malade. Ici on ne réduit pas le mouvement : on rend la page.
-			if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) { calme = true; }
-		}
-
-		function auSeuil(){
-			return !calme && window.innerWidth >= seuil;
-		}
 		function allumer(){
 			if (actif) { return; }
 			actif = true;
@@ -478,31 +454,77 @@ function wf_rb_script() {
 			demonter();
 		}
 
-		if (auSeuil()) { allumer(); }
-
-		window.addEventListener('scroll', relancer, { passive: true });
-
-		var tmo = 0;
-		window.addEventListener('resize', function(){
-			clearTimeout(tmo);
-			tmo = setTimeout(function(){
-				if (!auSeuil()) { eteindre(); return; }
-				if (!actif) { allumer(); return; }
-				mesurer();
-				peindre();
-			}, 150);
-		});
+		return { allumer: allumer, eteindre: eteindre, relancer: relancer, remesurer: function(){
+			if (!actif) { return; }
+			mesurer();
+			peindre();
+		} };
 	}
 
 	function demarrer(){
 		var groupes = grouper();
-		for (var i = 0; i < groupes.length; i++) {
-			if (groupes[i].cases.length < 2) {
-				crier(groupes[i].cases[0], 'un parcours demande au moins deux sections');
-				continue;
-			}
-			activer(groupes[i]);
+		var lignesActives = [];
+		var calme = false;
+		if (window.matchMedia) {
+			// Une mise en page qui glisse sous les yeux à chaque tour de molette
+			// est exactement ce qu'un visiteur sensible au mouvement demande à
+			// ne pas subir. La page verticale, elle, est complète.
+			if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) { calme = true; }
 		}
+
+		for (var i = 0; i < groupes.length; i++) {
+			var g = groupes[i];
+			var cs = getComputedStyle(g.cases[0]);
+			var douceur = nombre(cs, '--wf-rb-ease', 70);
+			var reg = {
+				len:   nombre(cs, '--wf-rb-len', 100) / 100,
+				seuil: nombre(cs, '--wf-rb-bp', 960),
+				barre: texte(cs, '--wf-rb-bar'),
+				k:     1 - (douceur / 100) * 0.86
+			};
+
+			var lignes = decouper(g);
+			var posees = 0;
+			for (var j = 0; j < lignes.length; j++) {
+				// Une ligne d'une seule section n'est rien d'autre qu'une
+				// section : on la laisse tranquille, dans le flux de la page.
+				if (lignes[j].length < 2) { continue; }
+				posees++;
+				lignesActives.push({ ligne: activerLigne(lignes[j], reg), seuil: reg.seuil, calme: calme });
+			}
+			if (!posees) {
+				crier(g.cases[0], 'aucune ligne de ce parcours n\'a deux sections ou plus');
+			}
+		}
+
+		if (!lignesActives.length) { return; }
+
+		function auSeuil(l){
+			return !l.calme && window.innerWidth >= l.seuil;
+		}
+		function ajuster(){
+			for (var i = 0; i < lignesActives.length; i++) {
+				var l = lignesActives[i];
+				if (auSeuil(l)) { l.ligne.allumer(); l.ligne.remesurer(); }
+				else { l.ligne.eteindre(); }
+			}
+		}
+
+		// Premier montage : dans l'ordre du document, pour que chaque ligne
+		// mesure sa position une fois que celles du dessus ont pris leur place.
+		for (var m = 0; m < lignesActives.length; m++) {
+			if (auSeuil(lignesActives[m])) { lignesActives[m].ligne.allumer(); }
+		}
+
+		window.addEventListener('scroll', function(){
+			for (var i = 0; i < lignesActives.length; i++) { lignesActives[i].ligne.relancer(); }
+		}, { passive: true });
+
+		var tmo = 0;
+		window.addEventListener('resize', function(){
+			clearTimeout(tmo);
+			tmo = setTimeout(ajuster, 150);
+		});
 	}
 
 	if (window.WF && WF.ready) { WF.ready(demarrer); return; }
@@ -554,7 +576,7 @@ function wf_rb_boot( $builder ) {
 			$flat = wp_json_encode( $tab['fields'] );
 			if ( is_string( $flat ) && false !== strpos( $flat, 'wf_rb' ) ) { break; }
 			$tab['fields'][] = array(
-				'label'   => 'Parcours en escalier',
+				'label'   => 'Sections côte à côte',
 				'type'    => 'group',
 				'divider' => true,
 				'fields'  => array( 'wf_rb', 'wf_rb_w', 'wf_rb_len', 'wf_rb_ease', 'wf_rb_from', 'wf_rb_bar', 'wf_rb_bar_color' ),

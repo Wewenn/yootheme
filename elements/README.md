@@ -13,16 +13,16 @@ collections saisies avec le champ natif « Articles » (`content-items`).
 
 ## ZIP prêts à installer
 
-**`dist/wf-yoo-elements-sans-wc-6.45.0.zip` — c'est celui à poser.** Construit
+**`dist/wf-yoo-elements-sans-wc-6.46.0.zip` — c'est celui à poser.** Construit
 sur le build 6.44.0 fourni le 10/09, avec ses 236 définitions intactes.
 
 | Version | Ce qu'elle apporte | Base |
 |---|---|---|
-| **6.45.0** | les deux modules de défilement de Section : [parcours en escalier](PARCOURS-ESCALIER.md) et [défilement latéral](DEFILEMENT-LATERAL.md) | 6.44.1 |
+| **6.46.0** | les deux modules de défilement de Section : [sections côte à côte](SECTIONS-COTE-A-COTE.md) et [défilement latéral](DEFILEMENT-LATERAL.md) | 6.44.1 |
 | 6.44.1 | les quatre correctifs de la [revue](REVUE-6.44.md), dont la fatale PHP 8 d'`agenda-pro` | 6.44.0 |
 | 6.31.0 | Panneau ++, carrousel perspective, correctif `container: true` | 6.28.0 |
 
-Le 6.45.0 ne change que cinq fichiers par rapport au 6.44.1 : les deux modules,
+Le 6.46.0 ne change que cinq fichiers par rapport au 6.44.1 : les deux modules,
 leur câblage dans `bootstrap.php`, l'en-tête de version et les notes.
 
 **Le 6.31.0 est conservé** parce qu'il est le seul à contenir le **carrousel
@@ -50,7 +50,7 @@ puis de rebâtir les ZIP :
 
 ```powershell
 cd "C:\Users\Ewen\Documents\Claude\We Frame\_build_suite"
-python build_elements.py 6.45.0
+python build_elements.py 6.46.0
 ```
 
 `bootstrap.php` charge les éléments avec `./element/*/element.json` : rien à
@@ -64,7 +64,7 @@ le travail que le ZIP livré contient :
 - les modules `modules/wf-section-scroll.php` et
   `modules/wf-section-ribbon.php`, et leurs ajouts dans `bootstrap.php` — voir
   [DEFILEMENT-LATERAL.md](DEFILEMENT-LATERAL.md) et
-  [PARCOURS-ESCALIER.md](PARCOURS-ESCALIER.md). Rien à ajouter dans `assets/` :
+  [SECTIONS-COTE-A-COTE.md](SECTIONS-COTE-A-COTE.md). Rien à ajouter dans `assets/` :
   si les keyframes `wf-hs-x` et `wf-hs-bar` de la v1 du défilement latéral y ont
   été recopiées, il faut au contraire les retirer.
 
