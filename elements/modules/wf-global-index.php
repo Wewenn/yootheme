@@ -494,6 +494,11 @@ function wf_gidx_customizer() {
 				'title'  => 'En-tête & Dialog',
 				'width'  => 420,
 				'fields' => array(
+					// Le panneau d'affichage, s'il est installé. Les deux
+					// modules restent indépendants : sans lui, pas de bouton.
+					'wf_dlg_affichage' => function_exists( 'wf_dlg_bouton' )
+						? wf_dlg_bouton()
+						: array( 'type' => 'description', 'description' => '' ),
 					'wf_dlg_dropbar' => array(
 						'type'  => 'button-panel',
 						'text'  => 'Réglages du dropbar',

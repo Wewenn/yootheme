@@ -13,12 +13,13 @@ collections saisies avec le champ natif « Articles » (`content-items`).
 
 ## ZIP prêts à installer
 
-**`dist/wf-yoo-elements-sans-wc-6.48.0.zip` — c'est celui à poser.** Construit
+**`dist/wf-yoo-elements-sans-wc-6.49.0.zip` — c'est celui à poser.** Construit
 sur le build 6.44.0 fourni le 10/09, avec ses 236 définitions intactes.
 
 | Version | Ce qu'elle apporte | Base |
 |---|---|---|
-| **6.48.0** | l'[annuaire global](ANNUAIRE-GLOBAL.md) : entrée « WeFrame » au menu, avec Dialog et Navbar | 6.47.0 |
+| **6.49.0** | l'[affichage du dialog](AFFICHAGE-DIALOG.md) : taille, forme et comportement | 6.48.0 |
+| 6.48.0 | l'[annuaire global](ANNUAIRE-GLOBAL.md) : entrée « WeFrame » au menu, avec Dialog et Navbar | 6.47.0 |
 | 6.47.0 | le panneau [Éléments WeFrame](INDEX-BUILDER.md) dans le builder | 6.46.0 |
 | 6.46.0 | les deux modules de défilement de Section : [sections côte à côte](SECTIONS-COTE-A-COTE.md) et [défilement latéral](DEFILEMENT-LATERAL.md) | 6.44.1 |
 | 6.44.1 | les quatre correctifs de la [revue](REVUE-6.44.md), dont la fatale PHP 8 d'`agenda-pro` | 6.44.0 |
@@ -52,7 +53,7 @@ puis de rebâtir les ZIP :
 
 ```powershell
 cd "C:\Users\Ewen\Documents\Claude\We Frame\_build_suite"
-python build_elements.py 6.48.0
+python build_elements.py 6.49.0
 ```
 
 `bootstrap.php` charge les éléments avec `./element/*/element.json` : rien à
@@ -64,9 +65,10 @@ le travail que le ZIP livré contient :
 - le correctif `container: true` — quatre lignes, voir
   [CORRECTIF-container-true.md](CORRECTIF-container-true.md) ;
 - les modules `modules/wf-section-scroll.php`, `modules/wf-section-ribbon.php`,
-  `modules/wf-builder-index.php` et `modules/wf-global-index.php`, et leurs
-  ajouts dans `bootstrap.php` — voir [INDEX-BUILDER.md](INDEX-BUILDER.md),
-  [ANNUAIRE-GLOBAL.md](ANNUAIRE-GLOBAL.md),
+  `modules/wf-builder-index.php`, `modules/wf-global-index.php` et
+  `modules/wf-dialog-display.php`, et leurs ajouts dans `bootstrap.php` — voir
+  [INDEX-BUILDER.md](INDEX-BUILDER.md), [ANNUAIRE-GLOBAL.md](ANNUAIRE-GLOBAL.md),
+  [AFFICHAGE-DIALOG.md](AFFICHAGE-DIALOG.md),
   [DEFILEMENT-LATERAL.md](DEFILEMENT-LATERAL.md) et
   [SECTIONS-COTE-A-COTE.md](SECTIONS-COTE-A-COTE.md). Rien à ajouter dans `assets/` :
   si les keyframes `wf-hs-x` et `wf-hs-bar` de la v1 du défilement latéral y ont
