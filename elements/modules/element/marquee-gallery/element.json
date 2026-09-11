@@ -1,0 +1,342 @@
+{
+    "name": "wf_marquee_gallery",
+    "title": "Marquee Gallery",
+    "group": "WeFrame · Scroll & Images",
+    "icon": "${url:images/ic30.svg}",
+    "element": true,
+    "container": true,
+    "width": 500,
+    "defaults": {
+        "speed": 40,
+        "speed_mobile": 0,
+        "reverse": false,
+        "pause_on_hover": true,
+        "gap": 24,
+        "img_height": 260,
+        "img_height_mobile": 170,
+        "radius": 14,
+        "bulge": false,
+        "bulge_depth": 18,
+        "bulge_depth_mobile": 0,
+        "grayscale": false,
+        "color_on_hover": true,
+        "fade_edges": true,
+        "fade_color": "#ffffff"
+    },
+    "placeholder": {
+        "children": [
+            {
+                "type": "wf_scroll_photos_item",
+                "props": {
+                    "image_alt": "Image 1"
+                }
+            },
+            {
+                "type": "wf_scroll_photos_item",
+                "props": {
+                    "image_alt": "Image 2"
+                }
+            },
+            {
+                "type": "wf_scroll_photos_item",
+                "props": {
+                    "image_alt": "Image 3"
+                }
+            },
+            {
+                "type": "wf_scroll_photos_item",
+                "props": {
+                    "image_alt": "Image 4"
+                }
+            },
+            {
+                "type": "wf_scroll_photos_item",
+                "props": {
+                    "image_alt": "Image 5"
+                }
+            }
+        ]
+    },
+    "templates": {
+        "render": "./template.php"
+    },
+    "fields": {
+        "items": {
+            "label": "Images",
+            "type": "content-items",
+            "item": "wf_scroll_photos_item",
+            "title": "image_alt",
+            "media": {
+                "type": "image",
+                "item": {
+                    "image": "src",
+                    "image_alt": "alt"
+                }
+            }
+        },
+        "speed": {
+            "label": "Vitesse (secondes/cycle)",
+            "description": "Valeur haute = plus lent.",
+            "type": "number",
+            "attrs": {
+                "min": 10,
+                "max": 120,
+                "step": 2
+            },
+            "source": true
+        },
+        "speed_mobile": {
+            "label": "Vitesse mobile (s)",
+            "description": "0 = identique desktop.",
+            "type": "number",
+            "attrs": {
+                "min": 0,
+                "max": 120,
+                "step": 2
+            },
+            "source": true
+        },
+        "reverse": {
+            "label": "Direction inversée",
+            "type": "checkbox",
+            "text": "Défile de gauche à droite"
+        },
+        "pause_on_hover": {
+            "label": "Pause au survol",
+            "type": "checkbox",
+            "text": "Activer"
+        },
+        "gap": {
+            "label": "Espacement (px)",
+            "type": "number",
+            "attrs": {
+                "min": 0,
+                "max": 80,
+                "step": 4
+            },
+            "source": true
+        },
+        "img_height": {
+            "label": "Hauteur images desktop (px)",
+            "type": "number",
+            "attrs": {
+                "min": 100,
+                "max": 500,
+                "step": 10
+            },
+            "source": true
+        },
+        "img_height_mobile": {
+            "label": "Hauteur images mobile (px)",
+            "type": "number",
+            "attrs": {
+                "min": 80,
+                "max": 400,
+                "step": 10
+            },
+            "source": true
+        },
+        "radius": {
+            "label": "Arrondi (px)",
+            "type": "number",
+            "attrs": {
+                "min": 0,
+                "max": 40,
+                "step": 2
+            },
+            "source": true,
+            "description": "Ignore quand le bombement est actif : l'arc decrit alors la forme."
+        },
+        "bulge": {
+            "label": "Bombement",
+            "type": "checkbox",
+            "text": "Bomber le haut et le bas des images"
+        },
+        "bulge_depth": {
+            "label": "Profondeur d'arc (px)",
+            "description": "Fleche de l'arc, en pixels. Plafonnee a 30 % de la hauteur d'image : au-dela de la moitie, le rectangle degenere en lentille.",
+            "type": "number",
+            "attrs": {
+                "min": 0,
+                "max": 60,
+                "step": 2
+            },
+            "source": true,
+            "show": "bulge"
+        },
+        "bulge_depth_mobile": {
+            "label": "Profondeur d'arc mobile (px)",
+            "description": "0 = a l'echelle de la hauteur mobile.",
+            "type": "number",
+            "attrs": {
+                "min": 0,
+                "max": 40,
+                "step": 2
+            },
+            "source": true,
+            "show": "bulge"
+        },
+        "grayscale": {
+            "label": "Niveaux de gris",
+            "type": "checkbox",
+            "text": "Activer"
+        },
+        "color_on_hover": {
+            "label": "Couleur au survol",
+            "type": "checkbox",
+            "text": "Repasse en couleur au survol",
+            "show": "grayscale"
+        },
+        "fade_edges": {
+            "label": "Fondu latéral",
+            "type": "checkbox",
+            "text": "Dégradé sur les bords"
+        },
+        "fade_color": {
+            "label": "Couleur du fondu",
+            "description": "Doit matcher le fond de la section.",
+            "type": "color",
+            "show": "fade_edges"
+        },
+        "animation": "${builder.animation}",
+        "visibility": "${builder.visibility}",
+        "css": {
+            "label": "CSS",
+            "type": "editor",
+            "mode": "css",
+            "source": true,
+            "attrs": {
+                "debounce": 500
+            },
+            "description": "Styles CSS personnalises pour cet element."
+        },
+        "name": "${builder.name}",
+        "status": "${builder.status}",
+        "source": "${builder.source}",
+        "id": "${builder.id}",
+        "transform": "${builder.transform}",
+        "position": "${builder.position}",
+        "blend": "${builder.blend}",
+        "class": {
+            "label": "Classes",
+            "type": "text",
+            "source": true,
+            "description": "Un ou plusieurs noms de classe pour l'element (separes par des espaces)."
+        },
+        "attributes": {
+            "label": "Attributs",
+            "type": "editor",
+            "source": true,
+            "attrs": {
+                "debounce": 500
+            },
+            "description": "Un attribut par ligne, au format nom=valeur."
+        },
+        "margin": "${builder.margin}",
+        "maxwidth": "${builder.maxwidth}"
+    },
+    "fieldset": {
+        "default": {
+            "type": "tabs",
+            "fields": [
+                {
+                    "title": "Contenu",
+                    "fields": [
+                        "items"
+                    ]
+                },
+                {
+                    "title": "Réglages",
+                    "fields": [
+                        {
+                            "label": "Animation",
+                            "type": "group",
+                            "divider": true,
+                            "fields": [
+                                "speed",
+                                "speed_mobile",
+                                "reverse",
+                                "pause_on_hover"
+                            ]
+                        },
+                        {
+                            "label": "Images",
+                            "type": "group",
+                            "divider": true,
+                            "fields": [
+                                "gap",
+                                "img_height",
+                                "img_height_mobile",
+                                "radius",
+                                "grayscale",
+                                "color_on_hover"
+                            ]
+                        },
+                        {
+                            "label": "Bombement",
+                            "type": "group",
+                            "divider": true,
+                            "fields": [
+                                "bulge",
+                                "bulge_depth",
+                                "bulge_depth_mobile"
+                            ]
+                        },
+                        {
+                            "label": "Fondu",
+                            "type": "group",
+                            "divider": true,
+                            "fields": [
+                                "fade_edges",
+                                "fade_color"
+                            ]
+                        },
+                        {
+                            "label": "Général",
+                            "type": "group",
+                            "divider": true,
+                            "fields": [
+                                "position",
+                                "blend",
+                                "animation",
+                                "visibility"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "title": "Paramètres",
+                    "fields": [
+                        {
+                            "label": "Général",
+                            "type": "group",
+                            "divider": true,
+                            "fields": [
+                                "position",
+                                "maxwidth",
+                                "margin",
+                                "blend",
+                                "animation",
+                                "visibility"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "title": "Avancé",
+                    "fields": [
+                        "name",
+                        "status",
+                        "source",
+                        "id",
+                        "class",
+                        "attributes",
+                        "css",
+                        "transform"
+                    ]
+                }
+            ]
+        }
+    },
+    "iconSmall": "${url:images/ic30.svg}"
+}

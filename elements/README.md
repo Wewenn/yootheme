@@ -1,6 +1,6 @@
 # Éléments WeFrame pour `wf-yoo-elements`
 
-Trois éléments YOOtheme Pro, écrits dans la convention exacte du plugin
+Quatre éléments YOOtheme Pro, écrits dans la convention exacte du plugin
 `wf-yoo-elements` (v6.28.0) : un dossier par élément, `element.json` +
 `template.php` + `images/ic30.svg`, `icon` **et** `iconSmall` déclarés,
 collections saisies avec le champ natif « Articles » (`content-items`).
@@ -10,6 +10,7 @@ collections saisies avec le champ natif « Articles » (`content-items`).
 | `panel-pp/` | `wf_panel_pp` | Panneau ++ | WeFrame · Contenu & Sections |
 | `perspective-slider/` | `wf_persp_slider` | Carrousel perspective infini | WeFrame · Scroll & Images |
 | `perspective-slider-item/` | `wf_persp_slider_item` | Image (carrousel perspective) | WeFrame · Scroll & Images |
+| `marquee-gallery/` | `wf_marquee_gallery` | Marquee Gallery | WeFrame · Scroll & Images |
 
 ## ZIP prêts à installer
 
@@ -41,12 +42,13 @@ sources n'ont pas été fournies.
 ## Installation depuis les sources
 
 L'arborescence sous `elements/` reproduit celle du plugin. Il suffit donc de
-recopier les trois dossiers :
+recopier les quatre dossiers :
 
 ```
 elements/modules/element/panel-pp                 ->  _sources\wf-yoo-elements\modules\element\panel-pp
 elements/modules/element/perspective-slider       ->  _sources\wf-yoo-elements\modules\element\perspective-slider
 elements/modules/element/perspective-slider-item  ->  _sources\wf-yoo-elements\modules\element\perspective-slider-item
+elements/modules/element/marquee-gallery          ->  _sources\wf-yoo-elements\modules\element\marquee-gallery
 ```
 
 puis de rebâtir les ZIP :
@@ -57,7 +59,11 @@ python build_elements.py 6.49.0
 ```
 
 `bootstrap.php` charge les éléments avec `./element/*/element.json` : rien à
-déclarer, les trois dossiers sont pris automatiquement.
+déclarer, les quatre dossiers sont pris automatiquement.
+
+`marquee-gallery` existe déjà dans le plugin : la recopie **écrase** l'élément
+livré, elle ne l'ajoute pas. C'est voulu — voir
+[BOMBEMENT-MARQUEE.md](BOMBEMENT-MARQUEE.md).
 
 Penser à reporter aussi, sans quoi un rebuild depuis `_sources` perdrait
 le travail que le ZIP livré contient :
@@ -147,6 +153,23 @@ horizontale** — rien ne disparaît.
 
 Un « Recul aux bords » au-delà de ~350 px fait chevaucher les cartes : c'est
 voulu pour un effet de couloir, à baisser sinon.
+
+---
+
+## Marquee Gallery (`wf_marquee_gallery`)
+
+Élément **déjà présent dans le plugin**, repris ici pour un seul motif : son
+bombement transformait les images en lentilles. L'arc haut et bas est un rayon
+vertical de `border-radius` ; passé la moitié de la hauteur d'image, les deux
+arcs se rejoignent, les bords latéraux disparaissent et la photo est rognée
+jusqu'à sa colonne centrale. La flèche d'arc est désormais saisie en pixels et
+plafonnée à 30 % de la hauteur, desktop et mobile chacun avec la sienne.
+
+Détail du correctif et des trois réglages du groupe « Bombement » :
+[BOMBEMENT-MARQUEE.md](BOMBEMENT-MARQUEE.md).
+
+Le reste de l'élément est inchangé : défilement CSS pur, enfants dupliqués pour
+une boucle sans couture, aucun JavaScript.
 
 ---
 
